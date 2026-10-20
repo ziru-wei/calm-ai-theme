@@ -1,0 +1,601 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Calm AI Theme</title>
+<style>[hidden]{display:none!important}body{margin:0}</style></head><body>
+<title>Calm AI Theme</title>
+<style>
+  /* Layout: a square four-quadrant chart on the left with the narrative under it, the selected example on the right.
+     Each example owns a colour (grey, amber, red, green). In the drawings, cyan always means where attention is
+     and the engagement loop. The AI is drawn in the example's own colour, and only in Current AI and Calm AI.
+     Both axes stay neutral ink. System fonts only. */
+  :root {
+    --bg: #F4F4F4;
+    --card: #FFFFFF;
+    --soft: #E9E9E9;
+    --fg: #171717;
+    --muted: #5C5C5C;
+    --line: #D2D2D2;
+    --c1: #6B7280;
+    --c2: #B45309;
+    --c3: #C62828;
+    --c4: #15803D;
+    --cy: #0891B2;
+    --on: #FFFFFF;
+    --shadow: 0 1px 2px rgba(0,0,0,.06), 0 8px 24px rgba(0,0,0,.04);
+    --font: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #121212; --card: #1C1C1C; --soft: #2C2C2C; --fg: #EDEDED; --muted: #A6A6A6; --line: #3A3A3A;
+      --c1: #A1A1AA; --c2: #F5A524; --c3: #FF7A7A; --c4: #4ADE80; --cy: #22D3EE; --on: #101010;
+      --shadow: none;
+      color-scheme: dark;
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #121212; --card: #1C1C1C; --soft: #2C2C2C; --fg: #EDEDED; --muted: #A6A6A6; --line: #3A3A3A;
+    --c1: #A1A1AA; --c2: #F5A524; --c3: #FF7A7A; --c4: #4ADE80; --cy: #22D3EE; --on: #101010;
+    --shadow: none;
+    color-scheme: dark;
+  }
+
+  * { box-sizing: border-box; }
+  body {
+    background: var(--bg);
+    color: var(--fg);
+    font-family: var(--font);
+    font-size: 15px;
+    line-height: 1.5;
+    padding-block: 32px 48px;
+    padding-left: max(16px, env(safe-area-inset-left, 0px));
+    padding-right: max(16px, env(safe-area-inset-right, 0px));
+  }
+  .wrap { max-width: 1040px; margin: 0 auto; }
+  h2, p, figure { margin: 0; }
+  button { font: inherit; color: inherit; }
+
+  .story { display: grid; grid-template-columns: 400px minmax(0, 1fr); gap: 28px; align-items: start; }
+  .left { display: flex; flex-direction: column; gap: 18px; }
+  .left svg { display: block; width: 100%; height: auto; }
+  svg text { font-family: var(--font); fill: var(--fg); }
+
+  .q { cursor: pointer; transition: fill-opacity .25s; }
+  .pt { cursor: pointer; }
+  .pt .ring-sel { opacity: 0; transition: opacity .2s; }
+  .pt.sel .ring-sel { opacity: 1; }
+  .pt:focus { outline: none; }
+  .pt:focus-visible .ring-sel { opacity: 1; stroke-dasharray: 4 3; }
+  .nm { font-size: 22px; font-weight: 700; }
+  .sb { font-size: 15px; fill: var(--muted); }
+  .ax { font-size: 18px; font-weight: 700; }
+  .end { font-size: 14px; fill: var(--muted); }
+
+  .narr { display: flex; flex-direction: column; gap: 8px; font-size: 14px; color: var(--muted); line-height: 1.5; }
+  .narr b { color: var(--fg); font-weight: 650; }
+
+  .right { min-width: 0; }
+  .card { background: none; border: 0; box-shadow: none; }
+  .panel { padding: 0; display: flex; flex-direction: column; gap: 10px; }
+  .p-head { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+  .badge { width: 28px; height: 28px; border-radius: 50%; background: var(--c); color: var(--on); font-size: 14px; font-weight: 700; display: inline-flex; align-items: center; justify-content: center; flex: none; }
+  .p-head h2 { font-size: 19px; font-weight: 750; letter-spacing: -.015em; line-height: 1.1; }
+  .chip { font-size: 12px; font-weight: 650; color: var(--c); background: color-mix(in srgb, var(--c) 12%, transparent); border-radius: 999px; padding: 2px 10px; white-space: nowrap; }
+  .desc { min-height: 2.8em; font-size: 13px; line-height: 1.4; color: var(--muted); max-width: 70ch; }
+
+  .causes { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .cause { text-align: left; background: transparent; border: 1px solid var(--line); border-radius: 10px; padding: 7px 10px; cursor: pointer; display: flex; flex-direction: column; gap: 3px; }
+  .cause b { font-size: 15px; }
+  .cause span { font-size: 12px; color: var(--muted); line-height: 1.4; }
+  .cause:hover { border-color: var(--muted); }
+  .cause[aria-pressed="true"] { border: 2px solid var(--c); padding: 6px 9px; background: color-mix(in srgb, var(--c) 8%, transparent); }
+  .cause[aria-pressed="true"] b { color: var(--c); }
+  .cause:focus-visible { outline: 2px solid var(--fg); outline-offset: 2px; }
+
+  .fig { display: flex; flex-direction: column; gap: 8px; }
+  .fig svg { display: block; width: 100%; height: auto; }
+  figcaption { font-size: 12px; color: var(--muted); line-height: 1.45; max-width: 62ch; }
+
+  .calmnote { font-size: 13.5px; color: var(--muted); line-height: 1.5; max-width: 70ch; }
+  .calmnote b { color: var(--c); }
+  .calmnote u { text-decoration-thickness: 2px; text-underline-offset: 3px; color: var(--fg); font-weight: 650; }
+  .key { display: flex; flex-wrap: wrap; gap: 6px 20px; font-size: 12.5px; color: var(--muted); }
+  .key div { display: flex; align-items: center; gap: 7px; }
+  .key svg { width: 24px; height: 14px; flex: none; }
+
+  /* drawings */
+  .plane { fill: var(--bg); stroke: var(--line); stroke-width: 1.6; }
+  .lv { font-size: 8px; font-weight: 700; letter-spacing: .06em; fill: var(--muted); }
+  .nd, .tl { font-size: 12px; font-weight: 600; }
+  .tl { fill: var(--fg); }
+  .att { fill: var(--cy); fill-opacity: .13; stroke: var(--cy); stroke-width: 3; stroke-linejoin: round; }
+  .beam { stroke-linecap: round; }
+  .loop path { stroke: var(--cy); stroke-width: 4; stroke-linecap: round; stroke-dasharray: 0.1 9; animation: flow 1.2s linear infinite; }
+  .loop.dim { opacity: .35; }
+  .loop.cut path { animation: none; stroke-dasharray: 2 11; opacity: .7; }
+  .tok { animation: tok 4.2s ease-in infinite; animation-delay: var(--d); opacity: 0; }
+  .ring { transform-box: fill-box; transform-origin: center; animation: ring 2.4s ease-in-out infinite; }
+  .bit { transform-box: fill-box; transform-origin: center; animation: rise 2.4s ease-in infinite; animation-delay: var(--d); opacity: 0; }
+  .roamA { animation: attA 8s ease-in-out infinite; }
+  .roamB { animation: attB 8s ease-in-out infinite; }
+
+  @keyframes tok { 0% { opacity: 0; transform: translate(0,0); } 15% { opacity: .95; } 70% { opacity: .9; } 100% { opacity: 0; transform: translate(var(--dx), var(--dy)); } }
+  @keyframes flow { to { stroke-dashoffset: -18.2; } }
+  @keyframes ring { 0%, 100% { transform: scale(1); opacity: .65; } 50% { transform: scale(1.07); opacity: 1; } }
+  @keyframes rise { 0% { opacity: 0; transform: translateY(0) scale(.6); } 25% { opacity: 1; } 100% { opacity: 0; transform: translateY(-110px) scale(1.5); } }
+  @keyframes nTop { 0%, 58% { opacity: 0; } 64%, 78% { opacity: 1; } 84%, 100% { opacity: 0; } }
+  @keyframes nBot { 0%, 58% { opacity: 1; } 64%, 78% { opacity: .0; } 84%, 100% { opacity: 1; } }
+  @keyframes cueA { 0%, 28% { opacity: 1; } 36%, 100% { opacity: 0; } }
+  @keyframes cueB { 0%, 30% { opacity: 0; } 38%, 62% { opacity: 1; } 70%, 100% { opacity: 0; } }
+  @keyframes cueC { 0%, 64% { opacity: 0; } 72%, 94% { opacity: 1; } 100% { opacity: 0; } }
+  .nTop { animation: nTop 9s ease-in-out infinite; }
+  .nBot { animation: nBot 9s ease-in-out infinite; }
+  @keyframes cueP { 0%, 100% { fill-opacity: .1; } 50% { fill-opacity: .24; } }
+  .cueP { animation: cueP 3s ease-in-out infinite; }
+  .cueA { animation: cueA 9s ease-in-out infinite; }
+  .cueB { animation: cueB 9s ease-in-out infinite; }
+  .cueC { animation: cueC 9s ease-in-out infinite; }
+  @keyframes attA { 0%, 30% { opacity: 0; } 42%, 66% { opacity: 1; } 78%, 100% { opacity: 0; } }
+  @keyframes attB { 0%, 30% { opacity: 1; } 42%, 66% { opacity: 0; } 78%, 100% { opacity: 1; } }
+
+
+  /* section 2: ways to move up and right */
+  .more { margin-top: 36px; padding-top: 18px; border-top: 1px solid var(--line); }
+  .more h2 { font-size: 16px; font-weight: 750; letter-spacing: -.015em; }
+  .more .lead { font-size: 12.5px; color: var(--muted); margin-top: 2px; max-width: 70ch; }
+  .ways { display: grid; grid-template-columns: 190px minmax(0, 1fr); gap: 32px; margin-top: 12px; align-items: center; }
+  .ways svg { display: block; width: 100%; height: auto; }
+  .list { display: flex; flex-direction: column; gap: 10px; max-width: 560px; }
+  .way { display: grid; grid-template-columns: 34px minmax(0, 1fr) minmax(0, 1.2fr); gap: 14px; align-items: center; }
+  .way .vr { align-self: stretch; background: var(--line); }
+  .way h3 { margin: 0; font-size: 14px; font-weight: 700; display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+  .way p { margin: 3px 0 0; font-size: 13.5px; color: var(--muted); line-height: 1.5; }
+  .way .ai { margin: 0; font-size: 12.5px; color: var(--fg); line-height: 1.5; }
+  .way .ai b { display: inline; margin-right: 6px; font-size: 10.5px; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); margin-bottom: 2px; }
+  .way .tag { font-size: 11.5px; font-weight: 650; color: var(--c4); background: color-mix(in srgb, var(--c4) 12%, transparent); border-radius: 999px; padding: 1px 9px; }
+  
+
+  .starts { display: grid; grid-template-columns: 220px minmax(0, 1fr); gap: 32px; margin-top: 12px; align-items: center; }
+  .starts svg { display: block; width: 100%; height: auto; }
+  .srows { display: flex; flex-direction: column; gap: 10px; max-width: 560px; }
+  .srow { display: grid; grid-template-columns: 12px minmax(0, 1fr) 1px minmax(0, 1.4fr); gap: 14px; align-items: center; }
+  .srow .dot { width: 12px; height: 12px; border-radius: 50%; background: var(--c); }
+  .srow h3 { margin: 0; font-size: 14px; font-weight: 700; }
+  .srow .vr { align-self: stretch; background: var(--line); }
+  .srow p { margin: 0; font-size: 12.5px; color: var(--muted); line-height: 1.5; }
+
+
+  .subs { display: flex; flex-direction: column; gap: 12px; margin-top: 14px; max-width: 760px; }
+  .sub { display: grid; grid-template-columns: 24px minmax(0, 1fr) minmax(0, 1.5fr); gap: 16px; align-items: center; }
+  .sub .n { width: 24px; height: 24px; border-radius: 50%; background: var(--fg); color: var(--bg); font-size: 13px; font-weight: 700; display: inline-flex; align-items: center; justify-content: center; }
+  .sub h3 { margin: 0; font-size: 15px; font-weight: 700; }
+  .sub .vr { align-self: stretch; background: var(--line); }
+  .sub p { margin: 0; font-size: 13px; color: var(--muted); line-height: 1.5; }
+
+
+  .sthemes { display: grid; grid-template-columns: 190px minmax(0, 1fr); gap: 28px; align-items: center; margin-top: 14px; }
+  .sthemes svg { width: 100%; height: auto; display: block; }
+  .srows { display: flex; flex-direction: column; gap: 14px; margin-top: 14px; max-width: 760px; }
+  .srow svg { width: 130px; height: 130px; display: block; }
+  .srow { display: grid; grid-template-columns: 130px 24px minmax(0, 1.1fr) minmax(0, 1fr); gap: 16px; align-items: center; }
+  .srow .n { width: 24px; height: 24px; border-radius: 50%; background: var(--fg); color: var(--bg); font-size: 13px; font-weight: 700; display: inline-flex; align-items: center; justify-content: center; }
+  .srow h3 { margin: 0; font-size: 15px; font-weight: 700; }
+  .srow .tag { display: block; font-size: 11px; color: var(--muted); margin-top: 2px; letter-spacing: .02em; }
+  .srow .vr { align-self: stretch; background: var(--line); }
+  .srow p { margin: 0; font-size: 13px; color: var(--muted); line-height: 1.5; }
+  .srow .tx h3 { margin-bottom: 4px; }
+  .srow .note { min-height: 1.5em; }
+  body.editing .srow .note:empty::before { content: "Write here"; color: var(--muted); opacity: .6; }
+
+
+  .edit-bar { position: fixed; top: 12px; right: 12px; z-index: 20; display: flex; gap: 6px; }
+  .edit-bar button, .cell .tools button { font: inherit; font-size: 12px; color: var(--fg); background: var(--card); border: 1px solid var(--line); border-radius: 6px; padding: 4px 10px; cursor: pointer; }
+  .edit-bar button[aria-pressed="true"] { background: var(--fg); color: var(--bg); }
+  .edit-bar .rst { display: none; }
+  .edit-bar .sv { display: none; font-size: 12px; color: var(--muted); align-self: center; }
+  body.editing .edit-bar .sv { display: inline; }
+  body.editing .edit-bar .rst { display: inline-block; }
+  .cell .tools { display: none; gap: 6px; margin-top: 6px; }
+  body.editing .cell .tools { display: flex; }
+  body.editing [contenteditable="true"] { outline: 1px dashed var(--muted); outline-offset: 2px; cursor: text; }
+  .dchart .hd, .dchart .hit { display: none; }
+  body.editing .dchart .hd, body.editing .dchart .hit { display: inline; }
+  .dchart .hd { fill: var(--bg); stroke: var(--fg); stroke-width: 4; cursor: grab; touch-action: none; }
+  .dchart .hd.sel { fill: var(--fg); }
+  .dchart .hit { stroke: transparent; stroke-width: 26; cursor: pointer; }
+
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after { animation: none !important; transition: none !important; }
+  }
+</style>
+
+<div class="edit-bar"><span id="sv" class="sv"></span><button type="button" class="rst" id="rst">Reset</button><button type="button" id="edt" aria-pressed="false">Edit</button></div>
+<div class="wrap" id="wrap">
+  <div class="story">
+
+    <div class="left">
+      <svg id="chart" viewBox="0 0 500 500" role="img" aria-label="Chart with ability on the horizontal axis and engagement on the vertical axis, both centred. Opaque tool is low on both. No Tech is low ability and high engagement. Current AI is high ability and low engagement. Calm AI is high on both.">
+        <rect class="q" data-k="1" x="0" y="250" width="250" height="250" fill="var(--c1)" fill-opacity=".1"/>
+        <rect class="q" data-k="2" x="0" y="0" width="250" height="250" fill="var(--c2)" fill-opacity=".1"/>
+        <rect class="q" data-k="3" x="250" y="250" width="250" height="250" fill="var(--c3)" fill-opacity=".1"/>
+        <rect class="q" data-k="4" x="250" y="0" width="250" height="250" fill="var(--c4)" fill-opacity=".1"/>
+
+        <line x1="0" y1="250" x2="488" y2="250" stroke="var(--fg)" stroke-width="2"/>
+        <polygon points="500,250 486,243 486,257" fill="var(--fg)"/>
+        <line x1="250" y1="500" x2="250" y2="12" stroke="var(--fg)" stroke-width="2"/>
+        <polygon points="250,0 243,14 257,14" fill="var(--fg)"/>
+
+        <text class="ax" x="486" y="232" text-anchor="end">Ability</text>
+        <text class="end" x="8" y="270">low</text>
+        <text class="end" x="486" y="270" text-anchor="end">high</text>
+        <text class="ax" x="262" y="22">Engagement</text>
+        <text class="end" x="262" y="40">high</text>
+        <text class="end" x="262" y="492">low</text>
+
+        <g class="pt" data-k="1" tabindex="0" role="button" aria-label="1 Opaque tool">
+          <circle class="ring-sel" cx="125" cy="322" r="26" fill="none" stroke="var(--c1)" stroke-width="3"/>
+          <circle cx="125" cy="322" r="17" fill="var(--c1)"/>
+          <text x="125" y="328" text-anchor="middle" style="fill:var(--on);font-size:16px;font-weight:700">1</text>
+          <text class="nm" x="125" y="372" text-anchor="middle">Opaque tool</text>
+          <text class="sb" x="125" y="394" text-anchor="middle">the tool blocks the activity</text>
+        </g>
+        <g class="pt" data-k="2" tabindex="0" role="button" aria-label="2 No Tech">
+          <circle class="ring-sel" cx="125" cy="178" r="26" fill="none" stroke="var(--c2)" stroke-width="3"/>
+          <circle cx="125" cy="178" r="17" fill="var(--c2)"/>
+          <text x="125" y="184" text-anchor="middle" style="fill:var(--on);font-size:16px;font-weight:700">2</text>
+          <text class="nm" x="125" y="128" text-anchor="middle">No Tech</text>
+          <text class="sb" x="125" y="150" text-anchor="middle">engaged, short reach</text>
+        </g>
+        <g class="pt" data-k="3" tabindex="0" role="button" aria-label="3 Current AI">
+          <circle class="ring-sel" cx="375" cy="322" r="26" fill="none" stroke="var(--c3)" stroke-width="3"/>
+          <circle cx="375" cy="322" r="17" fill="var(--c3)"/>
+          <text x="375" y="328" text-anchor="middle" style="fill:var(--on);font-size:16px;font-weight:700">3</text>
+          <text class="nm" x="375" y="372" text-anchor="middle">Current AI</text>
+          <text class="sb" x="375" y="394" text-anchor="middle">raises reach, cuts the feed</text>
+        </g>
+        <g class="pt" data-k="4" tabindex="0" role="button" aria-label="4 Calm AI">
+          <circle class="ring-sel" cx="375" cy="178" r="26" fill="none" stroke="var(--c4)" stroke-width="3"/>
+          <circle cx="375" cy="178" r="17" fill="var(--c4)"/>
+          <text x="375" y="184" text-anchor="middle" style="fill:var(--on);font-size:16px;font-weight:700">4</text>
+          <text class="nm" x="375" y="128" text-anchor="middle">Calm AI</text>
+          <text class="sb" x="375" y="150" text-anchor="middle">attention moves freely</text>
+        </g>
+      </svg>
+
+      <div class="narr">
+        <p data-eid="t0">A cook thinks about the dish through the hands. Touch, sound, smell, and sight keep the cook in a multisensory, analog loop with the fish, which helps them focus while much else happens ambiently in the background, and what the hands notice feeds their thinking about flavor, texture, and style. Current AI adds ability but pulls people out of that loop, by competing for attention or taking over the task. Calm AI keeps the loop, and can make it richer.</p>
+      </div>
+    </div>
+
+    <div class="right">
+
+      <!-- 1 Opaque tool -->
+      <article class="card panel" data-k="1" style="--c:var(--c1)">
+        <div class="p-head"><span class="badge">1</span><h2 data-eid="t1">Opaque tool</h2><span class="chip" data-eid="t2">Fails in any kitchen</span></div>
+        <p class="desc" data-eid="t3">A &lt;heavy, dull knife&gt; cuts the hand-food loop from the tool side. Not No Tech with a bad knife.</p>
+        <figure class="fig">
+          <svg viewBox="0 0 420 340" role="img" aria-label="The cook's attention is trapped in the hands-on level, where the heavy knife cuts the loop between hand and fish.">
+            <g style="opacity:.45"><polygon class="plane" points="130,28 404,28 354,138 80,138" /></g>
+            <polygon class="plane" points="110,198 384,198 334,308 60,308" />
+            <line x1="10" y1="166" x2="410" y2="166" stroke="var(--muted)" stroke-width="1.5" stroke-dasharray="6 5"/>
+            <text class="lv" x="410" y="156" text-anchor="end">HIGH-LEVEL · COOKING</text>
+            <text class="lv" x="410" y="184" text-anchor="end">LOW-LEVEL · CUTTING</text>
+            <rect x="41" y="150" width="10" height="26" fill="var(--soft)"/>
+            <path d="M 12 252 Q 12 172 46 172 Q 80 172 80 252 Z" fill="var(--soft)"/>
+            <circle cx="46" cy="132" r="20" fill="var(--soft)"/>
+            <polygon points="205,222 352,222 324.7,282 177.7,282" fill="var(--card)" stroke="var(--line)" stroke-width="1.6"/>
+            <g transform="translate(0,256) skewX(-24.44) translate(0,-256)"><path d="M 262 256 Q 282 241 308 247 Q 322 251 330 242 L 330 270 Q 322 261 308 265 Q 282 271 262 256 Z" fill="var(--soft)" stroke="var(--muted)" stroke-width="1.8" stroke-linejoin="round"/><circle cx="274" cy="254" r="2" fill="var(--fg)"/></g><g><path d="M 62 214 Q 84 256 150 255" fill="none" stroke="var(--soft)" stroke-width="14" stroke-linecap="round"/><ellipse cx="152" cy="255" rx="13" ry="10" fill="var(--soft)"/></g>
+            
+            <ellipse class="att" cx="238" cy="257" rx="100" ry="30"/>
+            <g transform="translate(160,255) scale(1.12,1.9)" style="opacity:1"><rect x="0" y="-4" width="24" height="8" rx="4" fill="var(--muted)"/><path d="M 24 -5 L 128 -2 Q 138 3 124 6 L 24 6 Z" fill="var(--muted)"/></g><g class="loop cut" fill="none" stroke="var(--cy)" stroke-width="3">
+              <path d="M 180 245 Q 221 214 258 245"/>
+              <path d="M 258 265 Q 221 296 180 265"/>
+            </g>
+            <g stroke="var(--fg)" stroke-width="4" stroke-linecap="round"><line x1="210" y1="219" x2="232" y2="241"/><line x1="232" y1="219" x2="210" y2="241"/></g>
+            <text class="tl" x="217" y="300" text-anchor="middle" style="opacity:1">&lt;heavy, dull knife&gt;</text>
+          </svg>
+        </figure>
+        <div class="key"><div><svg viewBox="0 0 24 14"><rect x="2" y="1.5" width="20" height="11" rx="3" fill="var(--cy)" fill-opacity=".2" stroke="var(--cy)" stroke-width="2.4"/></svg>attention</div><div><svg viewBox="0 0 24 14"><path d="M 2 7 L 22 7" stroke="var(--cy)" stroke-width="3.6" stroke-linecap="round" stroke-dasharray="0.1 6"/></svg>engagement loop</div></div>
+      </article>
+
+      <!-- 2 No Tech -->
+      <article class="card panel" data-k="2" style="--c:var(--c2)" hidden>
+        <div class="p-head"><span class="badge">2</span><h2 data-eid="t4">No Tech</h2><span class="chip" data-eid="t5">Baseline</span></div>
+        <p class="desc" data-eid="t6">Nothing between cook and food. The loop is intact, but attention cannot reach far toward the dish.</p>
+        <figure class="fig">
+          <svg viewBox="0 0 420 340" role="img" aria-label="Attention sits mostly in the hands-on level on an intact loop, and occasionally reaches up to the dish.">
+            <defs><marker id="m2" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="9" markerHeight="9" markerUnits="userSpaceOnUse" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z" style="fill:var(--cy)"/></marker></defs><g style="opacity:.8"><polygon class="plane" points="130,28 404,28 354,138 80,138" /><g transform="translate(246,76)"><ellipse rx="24" ry="17" fill="var(--card)" stroke="var(--muted)" stroke-width="1.8"/><g fill="none" stroke="var(--muted)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M 0 -9 Q 8 1 0 8 Q -8 1 0 -9 Z"/></g><text y="32" text-anchor="middle" style="font-size:10.5px;font-weight:600;fill:var(--muted)">flavor</text></g></g>
+            <polygon class="plane" points="110,198 384,198 334,308 60,308" /><polygon class="att nTop" points="130,28 404,28 354,138 80,138" /><polygon class="att nBot" points="110,198 384,198 334,308 60,308" />
+            <line x1="10" y1="166" x2="410" y2="166" stroke="var(--muted)" stroke-width="1.5" stroke-dasharray="6 5"/>
+            <text class="lv" x="410" y="156" text-anchor="end">HIGH-LEVEL · COOKING</text>
+            <text class="lv" x="410" y="184" text-anchor="end">LOW-LEVEL · CUTTING</text>
+            <g style="opacity:.8"><circle class="bit" style="--d:0s;animation-duration:4s" cx="246" cy="196" r="4" fill="var(--card)" stroke="var(--cy)" stroke-width="2"/></g>
+            <rect x="41" y="150" width="10" height="26" fill="var(--soft)"/>
+            <path d="M 12 252 Q 12 172 46 172 Q 80 172 80 252 Z" fill="var(--soft)"/>
+            <circle cx="46" cy="132" r="20" fill="var(--soft)"/>
+            <polygon points="205,222 352,222 324.7,282 177.7,282" fill="var(--card)" stroke="var(--line)" stroke-width="1.6"/>
+            <g transform="translate(0,256) skewX(-24.44) translate(0,-256)"><path d="M 262 256 Q 282 241 308 247 Q 322 251 330 242 L 330 270 Q 322 261 308 265 Q 282 271 262 256 Z" fill="var(--soft)" stroke="var(--muted)" stroke-width="1.8" stroke-linejoin="round"/><circle cx="274" cy="254" r="2" fill="var(--fg)"/></g><g><path d="M 62 214 Q 92 262 244 256" fill="none" stroke="var(--soft)" stroke-width="14" stroke-linecap="round"/><ellipse cx="248" cy="256" rx="13" ry="10" fill="var(--soft)"/></g>
+            <g class="nBot"></g>
+            <g class="nTop"></g>
+            <g class="loop" fill="none" stroke="var(--cy)" stroke-width="3">
+              <path d="M 238 243 Q 262 216 290 243" marker-end="url(#m2)"/>
+              <path d="M 290 269 Q 262 296 238 269" marker-end="url(#m2)"/>
+            </g>
+            <text class="tl" x="217" y="300" text-anchor="middle" style="opacity:1">&lt;no knife&gt;</text>
+          </svg>
+        </figure>
+        <div class="key"><div><svg viewBox="0 0 24 14"><rect x="2" y="1.5" width="20" height="11" rx="3" fill="var(--cy)" fill-opacity=".2" stroke="var(--cy)" stroke-width="2.4"/></svg>attention</div><div><svg viewBox="0 0 24 14"><path d="M 2 7 L 22 7" stroke="var(--cy)" stroke-width="3.6" stroke-linecap="round" stroke-dasharray="0.1 6"/></svg>engagement loop</div></div>
+      </article>
+
+      <!-- 3 Current AI -->
+      <article class="card panel" data-k="3" style="--c:var(--c3)" hidden>
+        <div class="p-head"><span class="badge">3</span><h2 data-eid="t7">Current AI</h2><span class="chip" data-eid="t8">Raises reach, cuts the feed</span></div>
+        <p class="desc" data-eid="t9">Ability rises, engagement falls, for two reasons.</p>
+
+        <figure class="fig" data-cause="comp">
+          <svg viewBox="0 0 420 340" role="img" aria-label="A speaking knife holds the cook's attention. The loop between hand and fish still runs, but nobody is attending to it.">
+            <defs><marker id="m3" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="9" markerHeight="9" markerUnits="userSpaceOnUse" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z" style="fill:var(--cy)"/></marker></defs><g style="opacity:.6"><polygon class="plane" points="130,28 404,28 354,138 80,138" /><g transform="translate(246,84)"><ellipse rx="24" ry="17" fill="var(--card)" stroke="var(--muted)" stroke-width="1.8"/><text x="0" y="8" text-anchor="middle" style="font-size:22px;font-weight:700;fill:var(--fg)">?</text></g></g>
+            <polygon class="plane" points="110,198 384,198 334,308 60,308" />
+            <line x1="10" y1="166" x2="410" y2="166" stroke="var(--muted)" stroke-width="1.5" stroke-dasharray="6 5"/>
+            <text class="lv" x="410" y="156" text-anchor="end">HIGH-LEVEL · COOKING</text>
+            <text class="lv" x="410" y="184" text-anchor="end">LOW-LEVEL · CUTTING</text>
+            <rect x="41" y="150" width="10" height="26" fill="var(--soft)"/>
+            <path d="M 12 252 Q 12 172 46 172 Q 80 172 80 252 Z" fill="var(--soft)"/>
+            <circle cx="46" cy="132" r="20" fill="var(--soft)"/>
+            <polygon points="205,222 352,222 324.7,282 177.7,282" fill="var(--card)" stroke="var(--line)" stroke-width="1.6"/>
+            <g transform="translate(0,256) skewX(-24.44) translate(0,-256)"><path d="M 262 256 Q 282 241 308 247 Q 322 251 330 242 L 330 270 Q 322 261 308 265 Q 282 271 262 256 Z" fill="var(--soft)" stroke="var(--muted)" stroke-width="1.8" stroke-linejoin="round"/><circle cx="274" cy="254" r="2" fill="var(--fg)"/></g><g><path d="M 62 214 Q 84 256 150 255" fill="none" stroke="var(--soft)" stroke-width="14" stroke-linecap="round"/><ellipse cx="152" cy="255" rx="13" ry="10" fill="var(--soft)"/></g>
+            
+            <g class="loop" fill="none" stroke="var(--cy)" stroke-width="3" style="opacity:.22"><path d="M 180 245 Q 221 214 258 245" marker-end="url(#m3)"/><path d="M 258 265 Q 221 296 180 265" marker-end="url(#m3)"/></g><g transform="translate(160,255) scale(1,1)" style="opacity:1"><rect x="0" y="-4" width="24" height="8" rx="4" fill="var(--c)"/><path d="M 24 -5 L 128 -2 Q 138 3 124 6 L 24 6 Z" fill="var(--c)"/></g>
+            <rect class="att" x="150" y="278" width="134" height="36" rx="4"/><rect x="157" y="284" width="120" height="24" fill="var(--card)" stroke="var(--c)" stroke-width="2.2"/><text class="tl" x="217" y="300" text-anchor="middle" style="fill:var(--c)">&lt;speaking knife&gt;</text>
+            <g class="tok" style="--dx:-125px;--dy:-150px;--d:0s"><text x="160" y="296" style="fill:var(--c);font-size:12px;font-weight:650">add 2 tsp salt</text></g><g class="tok" style="--dx:-125px;--dy:-150px;--d:1.4s"><text x="160" y="296" style="fill:var(--c);font-size:12px;font-weight:650">stir 30 s</text></g><g class="tok" style="--dx:-125px;--dy:-150px;--d:2.8s"><text x="160" y="296" style="fill:var(--c);font-size:12px;font-weight:650">lower the heat</text></g>
+          </svg>
+        </figure>
+
+        <figure class="fig" data-cause="take" hidden>
+          <svg viewBox="0 0 420 340" role="img" aria-label="An auto knife does the cutting and the loop between hand and fish is gone. The cook's attention goes to the dish with nothing to judge it by, or drifts away.">
+            <polygon class="plane" points="130,28 404,28 354,138 80,138" stroke-dasharray="6 5"/><polygon class="att roamA" points="130,28 404,28 354,138 80,138" /><g transform="translate(246,84)"><ellipse rx="24" ry="17" fill="var(--card)" stroke="var(--muted)" stroke-width="1.8"/><text x="0" y="8" text-anchor="middle" style="font-size:22px;font-weight:700;fill:var(--fg)">?</text></g>
+            <polygon class="plane" points="110,198 384,198 334,308 60,308" />
+            <line x1="10" y1="166" x2="410" y2="166" stroke="var(--muted)" stroke-width="1.5" stroke-dasharray="6 5"/>
+            <text class="lv" x="410" y="156" text-anchor="end">HIGH-LEVEL · COOKING</text>
+            <text class="lv" x="410" y="184" text-anchor="end">LOW-LEVEL · CUTTING</text>
+            <rect x="41" y="150" width="10" height="26" fill="var(--soft)"/>
+            <path d="M 12 252 Q 12 172 46 172 Q 80 172 80 252 Z" fill="var(--soft)"/>
+            <circle cx="46" cy="132" r="20" fill="var(--soft)"/>
+            <polygon points="205,222 352,222 324.7,282 177.7,282" fill="var(--card)" stroke="var(--line)" stroke-width="1.6"/>
+            <g transform="translate(0,256) skewX(-24.44) translate(0,-256)"><path d="M 262 256 Q 282 241 308 247 Q 322 251 330 242 L 330 270 Q 322 261 308 265 Q 282 271 262 256 Z" fill="var(--soft)" stroke="var(--muted)" stroke-width="1.8" stroke-linejoin="round"/><circle cx="274" cy="254" r="2" fill="var(--fg)"/></g><g><path d="M 62 214 Q 84 256 150 255" fill="none" stroke="var(--soft)" stroke-width="14" stroke-linecap="round"/><ellipse cx="152" cy="255" rx="13" ry="10" fill="var(--soft)"/></g>
+            <g class="roamA"></g>
+            <g class="roamB"><ellipse class="att" cx="130" cy="66" rx="62" ry="28"/><text x="130" y="71" text-anchor="middle" style="fill:var(--cy);font-size:13px;font-weight:700">drifting ...</text></g>
+            <g class="loop cut" fill="none" stroke="var(--cy)" stroke-width="3"><path d="M 180 245 Q 221 214 258 245"/><path d="M 258 265 Q 221 296 180 265"/></g><g stroke="var(--fg)" stroke-width="4" stroke-linecap="round"><line x1="210" y1="219" x2="232" y2="241"/><line x1="232" y1="219" x2="210" y2="241"/></g><g transform="translate(200,255) scale(.78,1)" style="opacity:1"><rect x="0" y="-4" width="24" height="8" rx="4" fill="var(--c)"/><path d="M 24 -5 L 128 -2 Q 138 3 124 6 L 24 6 Z" fill="var(--c)"/></g>
+            
+            <rect x="157" y="284" width="120" height="24" fill="var(--card)" stroke="var(--c)" stroke-width="2.2"/><text class="tl" x="217" y="300" text-anchor="middle" style="fill:var(--c)">&lt;auto knife&gt;</text>
+          </svg>
+        </figure>
+
+                <div class="causes" role="group" aria-label="Two causes">
+          <button class="cause" type="button" data-cause="comp" aria-pressed="true"><b>Competition</b><span>A voice in the ear pulls attention off the activity.</span></button>
+          <button class="cause" type="button" data-cause="take" aria-pressed="false"><b>Takeover</b><span>A machine does the cutting. Nothing left to engage in.</span></button>
+        </div>
+        <div class="key">
+          <div><svg viewBox="0 0 24 14"><rect x="2" y="1.5" width="20" height="11" rx="3" fill="var(--cy)" fill-opacity=".2" stroke="var(--cy)" stroke-width="2.4"/></svg>attention</div><div><svg viewBox="0 0 24 14"><path d="M 2 7 L 22 7" stroke="var(--cy)" stroke-width="3.6" stroke-linecap="round" stroke-dasharray="0.1 6"/></svg>engagement loop</div>
+          <div><svg viewBox="0 0 24 14"><circle cx="12" cy="7" r="5.5" fill="var(--c)"/></svg>Current AI</div>
+        </div>
+      </article>
+
+      <!-- 4 Calm AI -->
+      <article class="card panel" data-k="4" style="--c:var(--c4)" hidden>
+        <div class="p-head"><span class="badge">4</span><h2 data-eid="t10">Calm AI</h2><span class="chip" data-eid="t11">The goal</span></div>
+        <p class="desc" data-eid="t12">The AI sits in the activity. The cook chooses: stay with the cut or step back to the dish.</p>
+        <figure class="fig">
+          <svg viewBox="0 0 420 340" role="img" aria-label="The AI is all over the hands-on level. The cook's attention moves between the rich dish in mind and the cutting by choice.">
+            <defs><marker id="m5" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="9" markerHeight="9" markerUnits="userSpaceOnUse" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z" style="fill:var(--cy)"/></marker></defs><polygon class="plane" points="130,28 404,28 354,138 80,138" /><g transform="translate(150,70)"><ellipse rx="24" ry="17" fill="var(--card)" stroke="var(--muted)" stroke-width="1.8"/><g fill="none" stroke="var(--muted)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="-4" r="7"/><circle cx="4" r="7"/></g><text y="32" text-anchor="middle" style="font-size:10.5px;font-weight:600;fill:var(--muted)">pairing</text></g><g transform="translate(215,70)"><ellipse rx="24" ry="17" fill="var(--card)" stroke="var(--muted)" stroke-width="1.8"/><g fill="none" stroke="var(--muted)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M 0 -9 Q 8 1 0 8 Q -8 1 0 -9 Z"/></g><text y="32" text-anchor="middle" style="font-size:10.5px;font-weight:600;fill:var(--muted)">flavor</text></g><g transform="translate(280,70)"><ellipse rx="24" ry="17" fill="var(--card)" stroke="var(--muted)" stroke-width="1.8"/><g fill="none" stroke="var(--muted)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M -10 -4 q 3.3 -4 6.7 0 t 6.7 0 t 6.7 0 M -10 4 q 3.3 -4 6.7 0 t 6.7 0 t 6.7 0"/></g><text y="32" text-anchor="middle" style="font-size:10.5px;font-weight:600;fill:var(--muted)">texture</text></g><g transform="translate(345,70)"><ellipse rx="24" ry="17" fill="var(--card)" stroke="var(--muted)" stroke-width="1.8"/><g fill="none" stroke="var(--muted)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M 0 -9 L 2.6 -3 L 9 -2.8 L 4 1.6 L 5.6 8 L 0 4.6 L -5.6 8 L -4 1.6 L -9 -2.8 L -2.6 -3 Z"/></g><text y="32" text-anchor="middle" style="font-size:10.5px;font-weight:600;fill:var(--muted)">style</text></g>
+            <polygon class="plane" points="110,198 384,198 334,308 60,308" />
+            <polygon class="att roamA" points="130,28 404,28 354,138 80,138" /><polygon class="att roamB" points="110,198 384,198 334,308 60,308" />
+            <line x1="10" y1="166" x2="410" y2="166" stroke="var(--muted)" stroke-width="1.5" stroke-dasharray="6 5"/>
+            <text class="lv" x="410" y="156" text-anchor="end">HIGH-LEVEL · COOKING</text>
+            <text class="lv" x="410" y="184" text-anchor="end">LOW-LEVEL · CUTTING</text>
+            <g><circle class="bit" style="--d:0s" cx="150" cy="196" r="4" fill="var(--card)" stroke="var(--cy)" stroke-width="2"/><circle class="bit" style="--d:.8s" cx="247" cy="196" r="4" fill="var(--card)" stroke="var(--cy)" stroke-width="2"/><circle class="bit" style="--d:1.6s" cx="345" cy="196" r="4" fill="var(--card)" stroke="var(--cy)" stroke-width="2"/></g>
+            <rect x="41" y="150" width="10" height="26" fill="var(--soft)"/>
+            <path d="M 12 252 Q 12 172 46 172 Q 80 172 80 252 Z" fill="var(--soft)"/>
+            <circle cx="46" cy="132" r="20" fill="var(--soft)"/>
+            <polygon points="205,222 352,222 324.7,282 177.7,282" fill="var(--card)" stroke="var(--line)" stroke-width="1.6"/>
+            <polygon style="pointer-events:none" class="cueP" points="110,198 384,198 334,308 60,308" fill="var(--c)"/><g transform="translate(0,256) skewX(-24.44) translate(0,-256)"><path d="M 262 256 Q 282 241 308 247 Q 322 251 330 242 L 330 270 Q 322 261 308 265 Q 282 271 262 256 Z" fill="var(--soft)" stroke="var(--muted)" stroke-width="1.8" stroke-linejoin="round"/><circle cx="274" cy="254" r="2" fill="var(--fg)"/></g><g><path d="M 62 214 Q 84 256 150 255" fill="none" stroke="var(--soft)" stroke-width="14" stroke-linecap="round"/><ellipse cx="152" cy="255" rx="13" ry="10" fill="var(--soft)"/></g>
+            <g class="roamA"></g>
+            <g class="roamB"></g>
+            <g transform="translate(160,255) scale(1,0.8)" style="opacity:0.25"><rect x="0" y="-4" width="24" height="8" rx="4" fill="var(--fg)"/><path d="M 24 -5 L 128 -2 Q 138 3 124 6 L 24 6 Z" fill="var(--fg)"/></g><g class="loop" fill="none" stroke="var(--cy)" stroke-width="3">
+              <path d="M 180 245 Q 221 214 258 245" marker-end="url(#m5)"/>
+              <path d="M 258 265 Q 221 296 180 265" marker-end="url(#m5)"/>
+            </g>
+            <text class="tl" x="217" y="326" text-anchor="middle" style="opacity:.5">&lt;lightweight sharp knife that hides in the background&gt;</text>
+          </svg>
+        </figure>
+        <div class="key">
+          <div><svg viewBox="0 0 24 14"><rect x="2" y="1.5" width="20" height="11" rx="3" fill="var(--cy)" fill-opacity=".2" stroke="var(--cy)" stroke-width="2.4"/></svg>attention</div><div><svg viewBox="0 0 24 14"><path d="M 2 7 L 22 7" stroke="var(--cy)" stroke-width="3.6" stroke-linecap="round" stroke-dasharray="0.1 6"/></svg>engagement loop</div>
+          <div><svg viewBox="0 0 24 14"><circle cx="12" cy="7" r="5.5" fill="var(--c)"/></svg>Calm AI</div>
+        </div>
+              <p class="calmnote" data-eid="t13"><b>Calm AI</b> keeps both high. The person keeps the <u>freedom</u> to decide where attention goes, so calm does not mean the AI is quiet.</p>
+      </article>
+
+    </div>
+  </div>
+
+  <section class="more">
+    <h2 data-eid="t14">Directions</h2>
+    <p class="lead" data-eid="t15">Each subtheme is a direction on the plane. All three are done by blending AI into the environment and the task.</p>
+    <div class="srows"><div class="srow"><div class="cell"><svg class="dchart" viewBox="0 0 300 300" role="img" aria-label="Enhanced analog engagement arrows" data-arrows="125,148,180,52;175,173,180,52;227,192,180,52"><rect x="0" y="0" width="300" height="300" fill="var(--soft)" fill-opacity=".6"/><rect x="150" y="0" width="150" height="150" fill="var(--c4)" fill-opacity=".14"/><line x1="0" y1="150" x2="288" y2="150" stroke="var(--fg)" stroke-width="2"/><polygon points="300,150 287,144 287,156" fill="var(--fg)"/><line x1="150" y1="300" x2="150" y2="12" stroke="var(--fg)" stroke-width="2"/><polygon points="150,0 144,13 156,13" fill="var(--fg)"/><g class="arrows"></g></svg><div class="tools"><button type="button" data-add>+ Arrow</button><button type="button" data-del>Delete</button></div></div><span class="n">1</span><div class="tx"><h3 data-eid="t16">Enhanced analog engagement</h3><p data-eid="t17">Make the multisensory loop between the person and the material richer.</p></div><p class="note" data-eid="t18"></p></div><div class="srow"><div class="cell"><svg class="dchart" viewBox="0 0 300 300" role="img" aria-label="Ambient awareness arrows" data-arrows="75,225,185,115;75,75,185,115;225,225,185,115"><rect x="0" y="0" width="300" height="300" fill="var(--soft)" fill-opacity=".6"/><rect x="150" y="0" width="150" height="150" fill="var(--c4)" fill-opacity=".14"/><line x1="0" y1="150" x2="288" y2="150" stroke="var(--fg)" stroke-width="2"/><polygon points="300,150 287,144 287,156" fill="var(--fg)"/><line x1="150" y1="300" x2="150" y2="12" stroke="var(--fg)" stroke-width="2"/><polygon points="150,0 144,13 156,13" fill="var(--fg)"/><g class="arrows"></g></svg><div class="tools"><button type="button" data-add>+ Arrow</button><button type="button" data-del>Delete</button></div></div><span class="n">2</span><div class="tx"><h3 data-eid="t19">Ambient awareness</h3><p data-eid="t20">Sense more of what is going on around the activity, ambiently, so attention stays free to move and the hands stay in the loop.</p></div><p class="note" data-eid="t21"></p></div><div class="srow"><div class="cell"><svg class="dchart" viewBox="0 0 300 300" role="img" aria-label="Extended physical ability arrows" data-arrows="75,75,235,115"><rect x="0" y="0" width="300" height="300" fill="var(--soft)" fill-opacity=".6"/><rect x="150" y="0" width="150" height="150" fill="var(--c4)" fill-opacity=".14"/><line x1="0" y1="150" x2="288" y2="150" stroke="var(--fg)" stroke-width="2"/><polygon points="300,150 287,144 287,156" fill="var(--fg)"/><line x1="150" y1="300" x2="150" y2="12" stroke="var(--fg)" stroke-width="2"/><polygon points="150,0 144,13 156,13" fill="var(--fg)"/><g class="arrows"></g></svg><div class="tools"><button type="button" data-add>+ Arrow</button><button type="button" data-del>Delete</button></div></div><span class="n">3</span><div class="tx"><h3 data-eid="t22">Extended physical ability</h3><p data-eid="t23">Do more in physical space: AI, robots, and devices extend what hands and bodies can do.</p></div><p class="note" data-eid="t24"></p></div></div>
+  </section>
+
+  <section class="more">
+    <h2 data-eid="t25">Ways</h2>
+    <p class="lead" data-eid="t26">More than one route leads up and right. The knife above is one of them.</p>
+    <div class="ways">
+      <svg viewBox="0 0 300 300" role="img" aria-label="One broad route pointing up and to the right, toward higher ability and higher engagement">
+          <defs><linearGradient id="fa0" gradientUnits="userSpaceOnUse" x1="0" y1="0" x2="190" y2="0"><stop offset="0" stop-color="var(--c4)" stop-opacity="0"/><stop offset="1" stop-color="var(--c4)" stop-opacity="1"/></linearGradient></defs>
+          <rect x="0" y="0" width="300" height="300" fill="var(--soft)" fill-opacity=".6"/>
+          <rect x="150" y="0" width="150" height="150" fill="var(--c4)" fill-opacity=".14"/>
+          <line x1="0" y1="150" x2="288" y2="150" stroke="var(--fg)" stroke-width="2"/><polygon points="300,150 287,144 287,156" fill="var(--fg)"/>
+          <line x1="150" y1="300" x2="150" y2="12" stroke="var(--fg)" stroke-width="2"/><polygon points="150,0 144,13 156,13" fill="var(--fg)"/>
+          <text class="ax" x="286" y="172" text-anchor="end" style="font-size:14px">Ability</text>
+          <text class="ax" x="160" y="18" style="font-size:14px">Engagement</text>
+          <g transform="translate(50 250) rotate(-45)" opacity=".3"><line x1="0" y1="0" x2="225" y2="0" stroke="url(#fa0)" stroke-width="44" stroke-linecap="round"/><polygon points="285,0 220,-46 220,46" fill="var(--c4)"/></g>
+        </svg>
+      <div class="list">
+        <div class="way"><svg viewBox="0 0 80 150" role="img" aria-label="knife"><g fill="none" stroke="var(--muted)" stroke-width="5" stroke-linecap="round" stroke-linejoin="round" transform="translate(0,6)"><path d="M 28 96 L 28 34 Q 28 26 34 24 Q 56 52 52 96 Z"/><rect x="28" y="96" width="24" height="30" rx="6"/><path d="M 40 106 L 40 116"/></g></svg><div><h3 data-eid="t27">A better knife</h3></div><p class="ai" data-eid="t28">a tool that disappears into the activity.</p></div>
+        <div class="way"><svg viewBox="0 0 80 150" role="img" aria-label="shelf"><g fill="none" stroke="var(--muted)" stroke-width="5" stroke-linecap="round" stroke-linejoin="round" transform="translate(0,6)"><path d="M 6 36 L 74 36 M 6 78 L 74 78 M 6 120 L 74 120"/><path d="M 6 30 L 6 126 M 74 30 L 74 126"/><rect x="14" y="52" width="14" height="26" rx="2"/><circle cx="46" cy="66" r="10"/><rect x="58" y="94" width="12" height="26" rx="2"/><rect x="14" y="98" width="22" height="22" rx="2"/></g></svg><div><h3 data-eid="t29">A good environment</h3></div><p class="ai" data-eid="t30">the spatial interface itself carries the help and helps you focus.</p></div>
+        <div class="way"><svg viewBox="0 0 80 150" role="img" aria-label="sous-chef"><g fill="none" stroke="var(--muted)" stroke-width="5" stroke-linecap="round" stroke-linejoin="round" transform="translate(0,6)"><circle cx="40" cy="62" r="14"/><path d="M 24 52 Q 20 34 34 34 Q 40 24 48 34 Q 62 34 56 52"/><path d="M 14 126 Q 14 84 40 84 Q 66 84 66 126"/><path d="M 30 100 L 50 100"/></g></svg><div><h3 data-eid="t31">A good sous-chef</h3></div><p class="ai" data-eid="t32">a proactive agent that supports and does not take over, and does not ask too much: it reads the situation as if it could read your mind.</p></div>
+      </div>
+    </div>
+  </section>
+</div>
+
+<script>
+(function () {
+  var panels = Array.prototype.slice.call(document.querySelectorAll('.panel'));
+  var pts = Array.prototype.slice.call(document.querySelectorAll('.pt'));
+  var quads = Array.prototype.slice.call(document.querySelectorAll('.q'));
+  var causes = Array.prototype.slice.call(document.querySelectorAll('.cause'));
+  var cur = 1;
+  var cause = 'comp';
+
+  function paint() {
+    panels.forEach(function (p) { p.hidden = p.getAttribute('data-k') !== String(cur); });
+    Array.prototype.slice.call(document.querySelectorAll('figure[data-cause]')).forEach(function (f) {
+      f.hidden = f.getAttribute('data-cause') !== cause;
+    });
+    causes.forEach(function (c) { c.setAttribute('aria-pressed', c.getAttribute('data-cause') === cause ? 'true' : 'false'); });
+    pts.forEach(function (p) { p.classList.toggle('sel', p.getAttribute('data-k') === String(cur)); });
+    quads.forEach(function (q) {
+      q.setAttribute('fill-opacity', q.getAttribute('data-k') === String(cur) ? '0.26' : '0.1');
+    });
+  }
+  function select(k) { cur = k; paint(); }
+
+  pts.concat(quads).forEach(function (el) {
+    var k = +el.getAttribute('data-k');
+    el.addEventListener('click', function () { select(k); });
+  });
+  pts.forEach(function (el) {
+    var k = +el.getAttribute('data-k');
+    el.addEventListener('keydown', function (e) {
+      if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); select(k); }
+    });
+  });
+  causes.forEach(function (c) {
+    c.addEventListener('click', function () { cause = c.getAttribute('data-cause'); paint(); });
+  });
+
+  paint();
+})();
+
+(function () {
+  var KEY = 'calm-ai-edit-v3';
+  var texts = Array.prototype.slice.call(document.querySelectorAll('.wrap [data-eid]'));
+  var charts = Array.prototype.slice.call(document.querySelectorAll('.dchart'));
+  var NS = 'http://www.w3.org/2000/svg';
+  var state = charts.map(function (c) {
+    return c.getAttribute('data-arrows').split(';').map(function (a) { return a.split(',').map(Number); });
+  });
+  var sel = charts.map(function () { return -1; });
+  var editing = false;
+
+  function apply(obj) {
+    if (!obj) return;
+    if (obj.texts) texts.forEach(function (t) { var v = obj.texts[t.getAttribute('data-eid')]; if (typeof v === 'string') t.innerHTML = v; });
+    if (obj.arrows && obj.arrows.length === state.length) { state = obj.arrows; charts.forEach(function (c, ci) { render(ci); }); }
+  }
+  function snapshot() {
+    var o = {}; texts.forEach(function (t) { o[t.getAttribute('data-eid')] = t.innerHTML; });
+    return { texts: o, arrows: state };
+  }
+  var statusEl = document.getElementById('sv');
+  function status(msg) { if (statusEl) statusEl.textContent = msg; }
+  var timer = null;
+  function pushToServer() {
+    var body = JSON.stringify(snapshot());
+    try { localStorage.setItem(KEY, body); } catch (e) {}
+    fetch('/api/state', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: body })
+      .then(function (r) { status(r.ok ? 'Saved to state.json' : 'Save failed'); })
+      .catch(function () { status('Not saved to file: open via start.command'); });
+  }
+  function save() { clearTimeout(timer); status('Saving...'); timer = setTimeout(pushToServer, 250); }
+  function el(name, attrs) {
+    var n = document.createElementNS(NS, name);
+    for (var k in attrs) n.setAttribute(k, attrs[k]);
+    return n;
+  }
+  function clamp(v) { return Math.max(4, Math.min(296, v)); }
+
+  function render(ci) {
+    var g = charts[ci].querySelector('.arrows');
+    while (g.firstChild) g.removeChild(g.firstChild);
+    state[ci].forEach(function (a, ai) {
+      var x1 = a[0], y1 = a[1], x2 = a[2], y2 = a[3];
+      var ang = Math.atan2(y2 - y1, x2 - x1), L = Math.hypot(x2 - x1, y2 - y1);
+      var grp = el('g', { transform: 'translate(' + x1 + ' ' + y1 + ') rotate(' + (ang * 180 / Math.PI) + ')' });
+      grp.appendChild(el('line', { x1: 0, y1: 0, x2: Math.max(L - 14, 0), y2: 0, stroke: 'var(--c4)', 'stroke-width': 8 }));
+      grp.appendChild(el('polygon', { points: L + ',0 ' + (L - 20) + ',-13 ' + (L - 20) + ',13', fill: 'var(--c4)' }));
+      g.appendChild(grp);
+      var hit = el('line', { 'class': 'hit', x1: x1, y1: y1, x2: x2, y2: y2 });
+      hit.addEventListener('pointerdown', function () { sel[ci] = ai; render(ci); });
+      g.appendChild(hit);
+      [[x1, y1, 0], [x2, y2, 2]].forEach(function (p) {
+        var h = el('circle', { 'class': 'hd' + (sel[ci] === ai ? ' sel' : ''), cx: p[0], cy: p[1], r: 9 });
+        h.addEventListener('pointerdown', function (e) {
+          e.preventDefault();
+          sel[ci] = ai;
+          h.setPointerCapture(e.pointerId);
+          var svg = charts[ci];
+          function mv(ev) {
+            var pt = svg.createSVGPoint(); pt.x = ev.clientX; pt.y = ev.clientY;
+            var q = pt.matrixTransform(svg.getScreenCTM().inverse());
+            state[ci][ai][p[2]] = clamp(q.x); state[ci][ai][p[2] + 1] = clamp(q.y);
+            render(ci);
+            var nh = charts[ci].querySelectorAll('.hd');
+            var again = nh[ai * 2 + (p[2] ? 1 : 0)];
+            if (again) again.setPointerCapture && again.setPointerCapture(ev.pointerId);
+          }
+          function up() { document.removeEventListener('pointermove', mv); document.removeEventListener('pointerup', up); save(); }
+          document.addEventListener('pointermove', mv);
+          document.addEventListener('pointerup', up);
+          render(ci);
+        });
+        g.appendChild(h);
+      });
+    });
+  }
+  charts.forEach(function (c, ci) {
+    render(ci);
+    var cell = c.parentNode;
+    cell.querySelector('[data-add]').addEventListener('click', function () {
+      state[ci].push([60, 240, 170, 130]);
+      sel[ci] = state[ci].length - 1; render(ci); save();
+    });
+    cell.querySelector('[data-del]').addEventListener('click', function () {
+      if (!state[ci].length) return;
+      var i = sel[ci] >= 0 ? sel[ci] : state[ci].length - 1;
+      state[ci].splice(i, 1); sel[ci] = -1; render(ci); save();
+    });
+  });
+
+  fetch('/api/state').then(function (r) { return r.json(); }).then(function (o) {
+    if (o && (o.texts || o.arrows)) apply(o); status('Loaded state.json');
+  }).catch(function () {
+    try { apply(JSON.parse(localStorage.getItem(KEY) || 'null')); } catch (e) {}
+    status('Not connected to file: open via start.command');
+  });
+
+  var btn = document.getElementById('edt');
+  btn.addEventListener('click', function () {
+    editing = !editing;
+    document.body.classList.toggle('editing', editing);
+    btn.setAttribute('aria-pressed', editing ? 'true' : 'false');
+    btn.textContent = editing ? 'Done' : 'Edit';
+    texts.forEach(function (t) { if (editing) t.setAttribute('contenteditable', 'true'); else t.removeAttribute('contenteditable'); });
+    if (!editing) save();
+  });
+  texts.forEach(function (t) { t.addEventListener('input', save); });
+  document.getElementById('rst').addEventListener('click', function () {
+    try { localStorage.removeItem(KEY); } catch (e) {}
+    fetch('/api/state', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: '{}' }).then(function () { location.reload(); }).catch(function () { location.reload(); });
+  });
+})();
+</script>
+
+</body></html>
