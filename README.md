@@ -1,7 +1,25 @@
-# Calm AI theme page (local)
+# Calm AI theme page
 
-Start: double-click `start.command` (or run `python3 server.py`). It serves http://127.0.0.1:5500/ and opens it.
-Use this instead of VS Code Live Server (same port, so stop Live Server first). Firefox cannot write files from a static server, but this one can.
-Click **Edit** (top right) to edit any text block and drag, add, or delete arrows in the Directions charts.
-Every change is saved to `state.json` in this folder, which is tracked by git so you can commit your edits.
-Reset (shown in Edit mode) clears `state.json`.
+```
+index.html            the theme page (Interactive + Narrative views), top right: Related works, Edit
+state.json            saved text edits / arrows / projects of the theme page
+server.py             local server for the theme page (saves edits to state.json)
+start.command         double-click to run server.py
+related-works/        Ambient Interfaces dashboard (gallery / board / axis of related work)
+  index.html app.js app.css   the dashboard
+  catalog.defaults.json       starter cards; catalog.json (your edits) overrides it once it exists
+  axes.json settings.json     axis placements and view settings
+  server.js start.command     local editor for the dashboard (Node.js)
+Claude outputs/       working notes and figures, NOT deployed
+.github/workflows/    GitHub Pages deploy
+```
+
+## Run locally
+
+- Theme page: double-click `start.command` (or `python3 server.py`), http://127.0.0.1:5500/. Click **Edit** (top right) to edit text and arrows; changes go to `state.json`.
+- Related works, read-only: http://127.0.0.1:5500/related-works/ (opens from the **Related works** link).
+- Related works, editable: in `related-works/` run `node server.js` (or double-click its `start.command`), http://127.0.0.1:4173. Edits go to `catalog.json`, `notes/`, `images/`, `axes.json`, `settings.json`. Commit them to publish.
+
+## Publish (GitHub Pages)
+
+Push to `main`. The workflow in `.github/workflows/pages.yml` copies only `index.html`, `state.json` and the dashboard files into the site (so `Claude outputs/` is not served). One-time setting: repo **Settings, Pages, Source: GitHub Actions**. Public site: https://ziru-wei.github.io/calm-ai-theme/ . The public page hides Edit; the dashboard is read-only there.

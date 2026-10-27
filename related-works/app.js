@@ -11,12 +11,13 @@ function clamp01(n){return Math.max(0,Math.min(1,Number(n)||0));}
 let saveTimer=0,saveChain=Promise.resolve(),settingsTimer=0,activePage=null,activeNoteFlush=null,detailFromApp=false;
 const MEDIA_TYPES=new Set(['image/jpeg','image/png','image/gif']);
 const idRegex=/^[a-z0-9-]{1,48}$/;
-const dataJSON=async(url,opts={})=>{const r=await fetch(url,{cache:'no-store',...opts});const data=await r.json();if(!r.ok)throw new Error(data.error||`Request failed: ${r.status}`);return data;};
+let RO=false;
+const dataJSON=async(url,opts={})=>{if(RO&&opts.method&&opts.method!=='GET')return {ok:true};const r=await fetch(url,{cache:'no-store',...opts});const data=await r.json();if(!r.ok)throw new Error(data.error||`Request failed: ${r.status}`);return data;};
 function toast(message){const m=$('#message');m.textContent=message;m.classList.add('show');clearTimeout(toast._timer);toast._timer=setTimeout(()=>m.classList.remove('show'),2500);}
 function labelFor(id){return catalog.labels.find(x=>x.id===id);}
 function allLabels(){return [...catalog.labels,{id:'',name:'Unlabeled',color:'#d7dce2'}];}
 function noteBlocks(id){return notes.get(id)||[];}
-function noteImageUrl(id,name){return `/images/notes/${encodeURIComponent(id)}/${encodeURIComponent(name)}`;}
+function noteImageUrl(id,name){return `images/notes/${encodeURIComponent(id)}/${encodeURIComponent(name)}`;}
 function noteCover(id){for(const b of noteBlocks(id)){if(b.type==='image')return noteImageUrl(id,b.file);if(b.type==='text'&&b.value.trim())return '';}return '';}
 function coverSrc(c){return noteCover(c.id)||c.img||'';}
 function parseVideo(raw){
@@ -35,10 +36,10 @@ function parseVideo(raw){
 function external(label,url){if(!url)return null;const a=el('a','',label);a.href=url;a.target='_blank';a.rel='noopener noreferrer';a.addEventListener('click',e=>e.stopPropagation());return a;}
 function saveCatalogSoon(){clearTimeout(saveTimer);saveTimer=setTimeout(saveCatalog,380);}
 function saveCatalog(){clearTimeout(saveTimer);const snapshot=JSON.stringify({version:1,labels:catalog.labels,cards:catalog.cards});
- saveChain=saveChain.catch(()=>{}).then(()=>dataJSON('/api/catalog',{method:'PUT',headers:{'Content-Type':'application/json'},body:snapshot}));
+ saveChain=saveChain.catch(()=>{}).then(()=>dataJSON('api/catalog',{method:'PUT',headers:{'Content-Type':'application/json'},body:snapshot}));
  saveChain.catch(err=>toast('Catalog save failed: '+err.message));return saveChain;
 }
-function saveSettings(){clearTimeout(settingsTimer);const snapshot=JSON.stringify({cardWidth,view,viewFields});settingsTimer=setTimeout(()=>dataJSON('/api/settings',{method:'PUT',headers:{'Content-Type':'application/json'},body:snapshot}).catch(e=>toast(e.message)),300);}
+function saveSettings(){clearTimeout(settingsTimer);const snapshot=JSON.stringify({cardWidth,view,viewFields});settingsTimer=setTimeout(()=>dataJSON('api/settings',{method:'PUT',headers:{'Content-Type':'application/json'},body:snapshot}).catch(e=>toast(e.message)),300);}
 function setView(next){if(!['gallery','board','axis'].includes(next))return;view=next;for(const name of ['gallery','board','axis'])$('#view-'+name).classList.toggle('active',name===view);$('#filters').hidden=view==='axis';$('#card-fields-menu')?.remove();$('#size-dock').hidden=false;$('#card-properties').title='Card properties for '+view;saveSettings();render();}
 function setSize(n){cardWidth=Math.max(150,Math.min(440,Number(n)||210));document.documentElement.style.setProperty('--card-width',cardWidth+'px');$('#size-slider').value=String(cardWidth);$('#size-value').textContent=String(cardWidth);saveSettings();}
 function matches(c){if(filter!=='all'&&c.labelId!==filter)return false;const q=search.toLowerCase().trim();if(!q)return true;return [c.title,c.year,c.by,c.desc,c.tags,c.url,c.paper,c.videoLink,labelFor(c.labelId)?.name].some(x=>String(x||'').toLowerCase().includes(q));}
@@ -106,7 +107,7 @@ function board(){const m=$('#main'),root=el('div','board'),filtered=catalog.card
 }
 // Axis positions are independent for each dimension; a card may appear on more than one axis.
 let axisSaveTimer=0,axisSaveChain=Promise.resolve();
-function saveAxesSoon(){clearTimeout(axisSaveTimer);axisSaveTimer=setTimeout(()=>{const snapshot=JSON.stringify({dimensions});axisSaveChain=axisSaveChain.catch(()=>{}).then(()=>dataJSON('/api/axes',{method:'PUT',headers:{'Content-Type':'application/json'},body:snapshot}));axisSaveChain.catch(e=>toast('Axis save failed: '+e.message));},270);}
+function saveAxesSoon(){clearTimeout(axisSaveTimer);axisSaveTimer=setTimeout(()=>{const snapshot=JSON.stringify({dimensions});axisSaveChain=axisSaveChain.catch(()=>{}).then(()=>dataJSON('api/axes',{method:'PUT',headers:{'Content-Type':'application/json'},body:snapshot}));axisSaveChain.catch(e=>toast('Axis save failed: '+e.message));},270);}
 function newId(prefix){return prefix+Math.random().toString(36).slice(2,10);}
 function addDimension(){dimensions.push({id:newId('d'),title:'New dimension',start:'Low',end:'High',marks:[],placements:[]});saveAxesSoon();render();}
 function axisMiniCard(c,placement=false){const card=el('div','axis-card'+(placement?' axis-card-plotted':''));card.dataset.cardId=c.id;card.setAttribute('aria-label',c.title);
@@ -215,21 +216,21 @@ function showCollection(){
  $('#detail-page').replaceChildren();render();
 }
 function closePage(){
- if(detailFromApp&&location.pathname.startsWith('/card/'))history.back();
- else{history.replaceState({},'','/');detailFromApp=false;showCollection();}
+ if(detailFromApp&&location.hash.startsWith('#card/'))history.back();
+ else{history.replaceState({},'',location.pathname+location.search);detailFromApp=false;showCollection();}
 }
 function openDetail(id,navigate=true){
  const c=catalog.cards.find(x=>x.id===id);if(!c)return;
  if(activePage&&activePage!==id&&activeNoteFlush){activeNoteFlush();activeNoteFlush=null;}
  activePage=id;
- if(navigate){history.pushState({ambientPage:id},'',`/card/${encodeURIComponent(id)}`);detailFromApp=true;}
+ if(navigate){history.pushState({ambientPage:id},'',`#card/${encodeURIComponent(id)}`);detailFromApp=true;}
  const page=$('#detail-page');page.replaceChildren();
  const top=el('div','page-toolbar'),back=el('button','page-back','×'),crumb=el('span','page-breadcrumb','Ambient Interfaces  /  '+(c.title||'Untitled')),saveState=el('span','page-save-state','Saved');
  back.type='button';back.title='Close peek';back.setAttribute('aria-label','Close peek');back.addEventListener('click',closePage);
  const del=el('button','page-delete','Delete');del.type='button';del.title='Delete this card';
  del.addEventListener('click',async()=>{if(!confirm(`Delete "${c.title}"? Its note and images will remain in the project folder.`))return;
   if(activeNoteFlush){activeNoteFlush();activeNoteFlush=null;}
-  catalog.cards=catalog.cards.filter(x=>x.id!==id);for(const d of dimensions)d.placements=d.placements.filter(x=>x.cardId!==id);saveAxesSoon();await saveCatalog();detailFromApp=false;history.replaceState({},'','/');showCollection();});
+  catalog.cards=catalog.cards.filter(x=>x.id!==id);for(const d of dimensions)d.placements=d.placements.filter(x=>x.cardId!==id);saveAxesSoon();await saveCatalog();detailFromApp=false;history.replaceState({},'',location.pathname+location.search);showCollection();});
  top.append(back,crumb,saveState,del);
  const scroller=el('div','page-scroll'),content=el('div','page-content');
  const title=el('input','page-title');title.type='text';title.value=c.title;title.placeholder='Untitled project';title.setAttribute('aria-label','Project name');
@@ -325,7 +326,7 @@ function initializeRichToolbar(){
  window.addEventListener('resize',positionSelectionToolbar);
 }
 function insertAtCursor(editor,node){editor.focus();const selection=window.getSelection();const range=document.createRange();if(selection.rangeCount&&editor.contains(selection.anchorNode)){const s=selection.getRangeAt(0);range.setStart(s.startContainer,s.startOffset);range.collapse(true);}else{range.selectNodeContents(editor);range.collapse(false);}range.deleteContents();range.insertNode(node);range.setStartAfter(node);range.collapse(true);selection.removeAllRanges();selection.addRange(range);}
-const noteQueues=new Map();function saveNote(id,blocks,status){status.textContent='Saving...';const previous=noteQueues.get(id)||Promise.resolve();const task=previous.catch(()=>{}).then(()=>dataJSON('/api/notes/'+id,{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify({blocks})}));noteQueues.set(id,task);task.then(()=>{if(noteQueues.get(id)===task)status.textContent='Saved';}).catch(e=>{status.textContent='Save failed';toast(e.message);});return task;}
+const noteQueues=new Map();function saveNote(id,blocks,status){status.textContent='Saving...';const previous=noteQueues.get(id)||Promise.resolve();const task=previous.catch(()=>{}).then(()=>dataJSON('api/notes/'+id,{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify({blocks})}));noteQueues.set(id,task);task.then(()=>{if(noteQueues.get(id)===task)status.textContent='Saved';}).catch(e=>{status.textContent='Save failed';toast(e.message);});return task;}
 function legacyFigures(c,body){
  const list=figures[c.id]||[];if(!list.length)return;
  const sec=el('div','section-divider'),heading=el('h3','note-title','Previously uploaded figures'),grid=el('div','legacy-figures');
@@ -366,7 +367,7 @@ function noteSectionWithHolder(c,body,saveState){
  async function uploadImage(blob){
   if(!blob||!MEDIA_TYPES.has(blob.type)){toast('PNG / JPEG / GIF only');return;}
   const pending=el('span','pending-upload','Uploading…');pending.contentEditable='false';insertAtCursor(editor,pending);
-  try{const r=await dataJSON('/api/note-image/'+c.id,{method:'POST',headers:{'Content-Type':blob.type},body:blob});
+  try{const r=await dataJSON('api/note-image/'+c.id,{method:'POST',headers:{'Content-Type':blob.type},body:blob});
    const image=el('img');image.src=r.url;image.dataset.file=r.file;image.alt='Pasted note image';image.contentEditable='false';
    pending.replaceWith(image);sync();
   }catch(e){pending.remove();toast(e.message);}
@@ -428,7 +429,7 @@ function agentAdd(){
    const card={id,title:item.title,year:item.year,by:item.by,desc:item.desc,tags:item.tags,url:item.url,paper:item.paper,videoLink:item.videoLink,img:item.img,labelId:lab?.id||'',mode:'contain',order:++order};
    catalog.cards.push(card);added.push({card,note:item.note});
   }
-  try{await saveCatalog();for(const item of added){if(!item.note)continue;const blocks=[{type:'text',value:item.note}];await dataJSON('/api/notes/'+item.card.id,{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify({blocks})});notes.set(item.card.id,blocks);}
+  try{await saveCatalog();for(const item of added){if(!item.note)continue;const blocks=[{type:'text',value:item.note}];await dataJSON('api/notes/'+item.card.id,{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify({blocks})});notes.set(item.card.id,blocks);}
    dialog.close();render();toast(`Imported ${added.length} cards`);
   }catch(e){render();status.textContent='Save failed: '+e.message;importButton.disabled=false;}
  });
@@ -512,15 +513,42 @@ function manageLabels(event){
  }
  draw();
 }
+async function staticJSON(url,fallback){try{const r=await fetch(url,{cache:'no-store'});if(!r.ok)return fallback;return await r.json();}catch{return fallback;}}
+// Live mode: node server.js provides /api. Static mode (GitHub Pages or any plain file server): read the JSON files, read-only.
+async function loadData(){
+ try{
+  const probe=await fetch('api/settings',{cache:'no-store'});
+  if(probe.ok&&(probe.headers.get('content-type')||'').includes('json')){
+   const settings=await probe.json();
+   const [data,allNotes,figData,axisData]=await Promise.all([dataJSON('api/catalog'),dataJSON('api/notes'),dataJSON('api/figures'),dataJSON('api/axes')]);
+   return {data,settings,allNotes,figData,axisData};
+  }
+ }catch{}
+ RO=true;document.body.classList.add('readonly');lockEditing();
+ const saved=await staticJSON('catalog.json',null);
+ const data=saved||await staticJSON('catalog.defaults.json',{version:1,labels:[],cards:[]});
+ const [settings,axisData]=await Promise.all([staticJSON('settings.json',{}),staticJSON('axes.json',{dimensions:[]})]);
+ const notesObj={};
+ if(saved)await Promise.all(data.cards.map(async c=>{const v=await staticJSON('notes/'+encodeURIComponent(c.id)+'.json',null);if(v&&Array.isArray(v.blocks))notesObj[c.id]=v.blocks;}));
+ return {data,settings,allNotes:{notes:notesObj},figData:{items:{}},axisData};
+}
+function lockEditing(){
+ const lock=()=>{
+  document.querySelectorAll('#main [contenteditable="true"],#detail-page [contenteditable="true"]').forEach(n=>n.setAttribute('contenteditable','false'));
+  document.querySelectorAll('#main input,#main textarea,#main select,#detail-page input,#detail-page textarea,#detail-page select').forEach(n=>{if(n.type==='checkbox')return;n.readOnly=true;if(n.tagName==='SELECT')n.disabled=true;});
+  document.querySelectorAll('#main [draggable="true"]').forEach(n=>{n.draggable=false;});
+ };
+ new MutationObserver(lock).observe(document.body,{childList:true,subtree:true});lock();
+}
 async function init(){try{
- const [data,settings,allNotes,figData,axisData]=await Promise.all([dataJSON('/api/catalog'),dataJSON('/api/settings'),dataJSON('/api/notes'),dataJSON('/api/figures'),dataJSON('/api/axes')]);catalog=data;dimensions=axisData.dimensions||[];viewFields={};for(const kind of ['gallery','board','axis'])viewFields[kind]={...FIELD_DEFAULTS[kind],...(settings.viewFields?.[kind]||{})};for(const [id,blocks] of Object.entries(allNotes.notes||{}))notes.set(id,blocks);figures=figData.items||{};
+ const {data,settings,allNotes,figData,axisData}=await loadData();catalog=data;dimensions=axisData.dimensions||[];viewFields={};for(const kind of ['gallery','board','axis'])viewFields[kind]={...FIELD_DEFAULTS[kind],...(settings.viewFields?.[kind]||{})};for(const [id,blocks] of Object.entries(allNotes.notes||{}))notes.set(id,blocks);figures=figData.items||{};
  view=['gallery','board','axis'].includes(settings.view)?settings.view:'gallery';cardWidth=Number.isInteger(settings.cardWidth)?settings.cardWidth:210;
  $('#view-gallery').classList.toggle('active',view==='gallery');$('#view-board').classList.toggle('active',view==='board');$('#view-axis').classList.toggle('active',view==='axis');$('#filters').hidden=view==='axis';
  document.documentElement.style.setProperty('--card-width',cardWidth+'px');$('#size-slider').value=cardWidth;$('#size-value').textContent=cardWidth;
  $('#view-gallery').addEventListener('click',()=>setView('gallery'));$('#view-board').addEventListener('click',()=>setView('board'));$('#view-axis').addEventListener('click',()=>setView('axis'));$('#card-properties').addEventListener('click',cardProperties);
  $('#search').addEventListener('input',e=>{search=e.target.value;render();});initializeRichToolbar();$('#peek-backdrop').addEventListener('click',closePage);document.addEventListener('keydown',e=>{if(e.key==='Escape'&&activePage&&!$('#label-menu'))closePage();});$('#manage-labels').addEventListener('click',manageLabels);$('#agent-add').addEventListener('click',agentAdd);$('#add-card').addEventListener('click',()=>addCard());$('#size-slider').addEventListener('input',e=>{setSize(e.target.value);if(view==='axis')render();});window.addEventListener('resize',()=>{if(view==='axis')for(const stage of document.querySelectorAll('.axis-stage'))layoutAxisStage(stage);});
  render();
- const route=()=>{const match=location.pathname.match(/^\/card\/([a-z0-9-]+)\/?$/);
+ const route=()=>{const match=location.hash.match(/^#card\/([a-z0-9-]+)$/);
   if(match&&catalog.cards.some(c=>c.id===match[1]))openDetail(match[1],false);
   else if(activePage)showCollection();
  };

@@ -44,7 +44,7 @@ async function readNotes(ids){const obj={};for(const id of ids){const data=await
 function validImage(bytes,type){if(type==='image/png')return bytes.subarray(0,8).equals(Buffer.from([137,80,78,71,13,10,26,10]));if(type==='image/jpeg')return bytes.length>=4&&bytes[0]===255&&bytes[1]===216&&bytes.at(-2)===255&&bytes.at(-1)===217;if(type==='image/gif')return ['GIF87a','GIF89a'].includes(bytes.toString('ascii',0,6));return false;}
 async function existsCard(id){const catalog=await loadCatalog();return catalog.cards.some(x=>x.id===id);}
 async function fileOr404(res,file,mime){try{return send(res,200,await fs.readFile(file),mime);}catch(e){if(e.code==='ENOENT')return error(res,404,'File not found');throw e;}}
-async function figures(){const obj={};try{for(const id of await fs.readdir(FIG_DIR)){if(!ID.test(id))continue;const entries=await fs.readdir(path.join(FIG_DIR,id),{withFileTypes:true}).catch(()=>[]);obj[id]=entries.filter(x=>x.isFile()&&FIG_FILE.test(x.name)).sort((a,b)=>a.name.localeCompare(b.name)).map(x=>({key:x.name,itemId:id,url:`/images/theory/${id}/${x.name}`}));}}catch(e){if(e.code!=='ENOENT')throw e;}return {items:obj};}
+async function figures(){const obj={};try{for(const id of await fs.readdir(FIG_DIR)){if(!ID.test(id))continue;const entries=await fs.readdir(path.join(FIG_DIR,id),{withFileTypes:true}).catch(()=>[]);obj[id]=entries.filter(x=>x.isFile()&&FIG_FILE.test(x.name)).sort((a,b)=>a.name.localeCompare(b.name)).map(x=>({key:x.name,itemId:id,url:`images/theory/${id}/${x.name}`}));}}catch(e){if(e.code!=='ENOENT')throw e;}return {items:obj};}
 async function route(req,res){
  let pathname;try{pathname=decodeURIComponent(new URL(req.url,`http://${HOST}:${PORT}`).pathname);}catch{return error(res,400,'Bad URL');}
  const method=req.method;

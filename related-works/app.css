@@ -241,3 +241,10 @@ body.detail-mode #detail-page{display:flex;position:fixed;z-index:29;top:0;botto
 @media(max-width:780px){.axis-layout{grid-template-columns:150px minmax(480px,1fr);gap:12px;overflow-x:auto}.axis-sidebar{top:74px}.axis-workspace{min-width:480px}.toolbar{gap:6px}#card-properties{padding:6px 7px}}
 /* Axis source cards keep their intrinsic height; the sidebar alone scrolls. */
 .axis-source{flex:0 0 auto}
+
+/* related-works additions */
+.back-link{font-size:13px;color:inherit;opacity:.65;text-decoration:none;margin-right:14px;white-space:nowrap}
+.back-link:hover{opacity:1;text-decoration:underline}
+.ro-tag{display:none;font-size:11px;letter-spacing:.04em;text-transform:uppercase;opacity:.55;border:1px solid currentColor;border-radius:999px;padding:1px 8px;margin-left:10px}
+body.readonly .ro-tag{display:inline-block}
+body.readonly #add-card,body.readonly #agent-add,body.readonly #manage-labels,body.readonly .label-more,body.readonly .page-delete,body.readonly .axis-add-dimension,body.readonly .axis-dim-action{display:none!important}

@@ -1,2 +1,4 @@
 .DS_Store
 state.json.tmp
+related-works/*.tmp
+node_modules/
