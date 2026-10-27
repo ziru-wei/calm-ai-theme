@@ -14,9 +14,9 @@
     --fg: #171717;
     --muted: #5C5C5C;
     --line: #D2D2D2;
-    --c1: #6B7280;
-    --c2: #B45309;
-    --c3: #C62828;
+    --c1: #C62828;
+    --c2: #6B7280;
+    --c3: #C28500;
     --c4: #15803D;
     --cy: #0891B2;
     --on: #FFFFFF;
@@ -26,14 +26,14 @@
   @media (prefers-color-scheme: dark) {
     :root:not([data-theme="light"]) {
       --bg: #121212; --card: #1C1C1C; --soft: #2C2C2C; --fg: #EDEDED; --muted: #A6A6A6; --line: #3A3A3A;
-      --c1: #A1A1AA; --c2: #F5A524; --c3: #FF7A7A; --c4: #4ADE80; --cy: #22D3EE; --on: #101010;
+      --c1: #FF7A7A; --c2: #A1A1AA; --c3: #FACC15; --c4: #4ADE80; --cy: #22D3EE; --on: #101010;
       --shadow: none;
       color-scheme: dark;
     }
   }
   :root[data-theme="dark"] {
     --bg: #121212; --card: #1C1C1C; --soft: #2C2C2C; --fg: #EDEDED; --muted: #A6A6A6; --line: #3A3A3A;
-    --c1: #A1A1AA; --c2: #F5A524; --c3: #FF7A7A; --c4: #4ADE80; --cy: #22D3EE; --on: #101010;
+    --c1: #FF7A7A; --c2: #A1A1AA; --c3: #FACC15; --c4: #4ADE80; --cy: #22D3EE; --on: #101010;
     --shadow: none;
     color-scheme: dark;
   }
@@ -202,17 +202,146 @@
   .dchart .hd.sel { fill: var(--fg); }
   .dchart .hit { stroke: transparent; stroke-width: 26; cursor: pointer; }
 
+
+  .tri { position: relative; width: 520px; height: 330px; margin-top: 14px; }
+  .tri svg { position: absolute; left: 0; top: 0; width: 520px; height: 320px; z-index: 2; pointer-events: none; }
+  #trimarks circle { pointer-events: auto; }
+  .tri .vl { position: absolute; display: inline-flex; align-items: center; gap: 6px; font-size: 13px; font-weight: 700; line-height: 1.25; transform: translateX(-50%); white-space: nowrap; }
+  .tri .vt { left: 260px; top: 4px; }
+  .tri .vl1 { left: 110px; top: 292px; }
+  .tri .vr2 { left: 410px; top: 292px; }
+  .vl .n { width: 22px; height: 22px; border-radius: 50%; background: var(--fg); color: var(--bg); font-size: 12px; font-weight: 700; display: inline-flex; align-items: center; justify-content: center; flex: none; }
+  #trimarks .hull { fill: var(--muted); fill-opacity: .38; stroke: none; }
+  #trimarks circle { fill: transparent; stroke: none; pointer-events: all; }
+  body.editing #trimarks .sel circle { fill: none; stroke: var(--c4); stroke-width: 2; stroke-dasharray: 3 3; }
+  body.editing #trimarks circle { cursor: grab; touch-action: none; }
+  .plabel { position: absolute; z-index: 1; color: var(--fg); font-size: 13px; font-weight: 700; white-space: nowrap; line-height: 1.2; }
+  .plabel.c { transform: translate(-50%, -50%); text-align: center; }
+  .ptools { display: none; gap: 14px; align-items: center; flex-wrap: wrap; margin-top: 10px; }
+  .ptools label { font-size: 12px; color: var(--muted); display: inline-flex; align-items: center; gap: 6px; }
+  .ptools input[type=range] { width: 130px; }
+  body.editing .ptools { display: flex; }
+  .ptools button { font: inherit; font-size: 12px; color: var(--fg); background: var(--card); border: 1px solid var(--line); border-radius: 6px; padding: 4px 10px; cursor: pointer; }
+
+  .dp { display: grid; grid-template-columns: minmax(0, 1fr) 520px; gap: 32px; align-items: start; }
+  .dp .srows { max-width: none; gap: 10px; margin-top: 12px; }
+  .dp .srow { grid-template-columns: 96px 22px minmax(0, 1fr); gap: 12px; align-items: start; }
+  .dp .srow .n { margin-top: -2px; }
+  .dp .srow .tx h3 { margin-top: 0; line-height: 18px; }
+  .dp .srow svg { width: 96px; height: 96px; }
+  .dp .srow .n { width: 22px; height: 22px; font-size: 12px; }
+  .dp .srow h3 { font-size: 14px; }
+  .dp .srow p { font-size: 12.5px; line-height: 1.45; }
+  .dp .cell .tools button { padding: 2px 6px; font-size: 11px; }
+  .plabel { z-index: 3; pointer-events: none; }
+  .ptools input[type=text] { font: inherit; font-size: 12px; color: var(--fg); background: var(--card); border: 1px solid var(--line); border-radius: 6px; padding: 4px 8px; width: 150px; }
+
+  /* section: form of the AI's output (notes, Oct 23), placed after Ways in the Interactive view. Text sits in divs. */
+  .f-banner { margin-top: 28px; display: flex; align-items: center; justify-content: space-between; gap: 16px; background: var(--soft); border-radius: 12px; padding: 12px 16px; }
+  .f-banner .f-bt { font-size: 13.5px; line-height: 1.5; min-width: 0; max-width: 80ch; }
+  .f-banner .f-bt b { font-weight: 700; }
+  .f-banner svg { flex: none; }
+  .fx.more { border-top: 0; margin-top: 18px; padding-top: 0; }
+  .fx .f-head { display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap; }
+  .fx .f-h2 { font-size: 16px; font-weight: 750; letter-spacing: -.015em; }
+  .fx .f-date { font-size: 11.5px; font-weight: 650; color: var(--muted); background: var(--soft); border-radius: 999px; padding: 1px 9px; }
+  .fx .f-lead { font-size: 12.5px; color: var(--muted); margin-top: 2px; max-width: 70ch; }
+  .f-grid { display: grid; grid-template-columns: minmax(0, 1.35fr) minmax(0, 1fr); gap: 32px; margin-top: 14px; align-items: start; }
+  .fc { display: block; width: 100%; max-width: 540px; height: auto; }
+  .fc text { font-family: var(--font); fill: var(--fg); }
+  .fc .axl { font-size: 15px; font-weight: 700; }
+  .fc .axs { font-size: 11.5px; fill: var(--muted); }
+  .fc .tk { font-size: 11.5px; fill: var(--muted); }
+  .fc .ql { font-size: 14.5px; font-weight: 700; }
+  .fq .fq-bg { fill: var(--soft); fill-opacity: .55; stroke: none; transition: fill .2s, fill-opacity .2s; }
+  .fq.on .fq-bg { fill: var(--c4); fill-opacity: .14; stroke: var(--c4); stroke-width: 2.5; }
+  .fq.open .fq-bg { stroke: var(--muted); stroke-width: 1.5; stroke-dasharray: 6 5; }
+  .ic { fill: none; stroke: var(--muted); stroke-width: 2.4; stroke-linecap: round; stroke-linejoin: round; }
+  .ic .o { stroke: var(--fg); }
+  .ic text { stroke: none; fill: var(--muted); font-size: 10.5px; font-weight: 600; font-family: var(--font); }
+  .f-side { display: flex; flex-direction: column; gap: 10px; min-width: 0; }
+  .f-q { font-size: 13px; font-weight: 700; }
+  .f-seg { display: inline-flex; align-self: flex-start; border: 1px solid var(--line); border-radius: 999px; padding: 3px; gap: 2px; background: var(--card); }
+  .f-opt { font: inherit; font-size: 13px; font-weight: 650; color: var(--muted); background: transparent; border: 0; border-radius: 999px; padding: 5px 14px; cursor: pointer; }
+  .f-opt[aria-pressed="true"] { background: var(--c4); color: var(--on); }
+  .f-opt:focus-visible { outline: 2px solid var(--fg); outline-offset: 2px; }
+  .f-say { font-size: 13px; line-height: 1.5; color: var(--fg); border-left: 3px solid var(--c4); padding: 2px 0 2px 12px; }
+  .f-q2 { font-size: 13px; font-weight: 700; margin-top: 10px; }
+  .f-kinds { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; }
+  .f-kind { background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 8px 10px; display: flex; flex-direction: column; gap: 3px; min-width: 0; }
+  .f-kind svg { width: 48px; height: 36px; }
+  .f-kind b { font-size: 13px; }
+  .f-kind span { font-size: 12px; color: var(--muted); line-height: 1.35; }
+  .f-why { margin-top: 22px; display: grid; grid-template-columns: 220px minmax(0, 1fr); gap: 20px; align-items: center; background: var(--card); border: 1px solid var(--line); border-radius: 12px; padding: 12px 16px; max-width: 900px; }
+  .f-why svg { width: 100%; height: auto; display: block; }
+  .f-spec2 { margin-top: 26px; display: grid; grid-template-columns: 52px repeat(3, minmax(0, 1fr)); gap: 8px 12px; align-items: center; max-width: 660px; }
+  .f-spec2 .h { font-size: 10.5px; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); font-weight: 700; }
+  .f-spec2 .r { font-size: 12.5px; font-weight: 700; }
+  .f-spec2 .s { display: flex; align-items: center; gap: 8px; font-size: 12px; color: var(--muted); min-width: 0; }
+  .f-spec2 .s svg { width: 52px; height: 32px; flex: none; }
+  .f-cap { font-size: 12px; color: var(--muted); margin-top: 8px; max-width: 72ch; line-height: 1.45; }
+  .f-sub { margin-top: 32px; display: flex; flex-direction: column; gap: 4px; max-width: 70ch; }
+  .f-h3 { font-size: 15px; font-weight: 750; letter-spacing: -.01em; }
+  .f-cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 14px; margin-top: 12px; max-width: 760px; }
+  .f-card { background: var(--card); border: 1px solid var(--line); border-radius: 12px; padding: 12px 14px; display: flex; flex-direction: column; gap: 6px; min-width: 0; }
+  .f-card svg { width: 100%; max-width: 210px; height: auto; display: block; }
+  .f-it { font-size: 14px; font-weight: 700; }
+  .f-it .f-hyp { font-size: 11px; font-weight: 650; color: var(--cy); margin-left: 6px; }
+  .f-ix { font-size: 12.5px; color: var(--muted); line-height: 1.5; }
+  .f-park { margin-top: 22px; display: flex; flex-wrap: wrap; gap: 8px; align-items: center; font-size: 12px; color: var(--muted); }
+  .f-park .pl { font-weight: 700; color: var(--fg); margin-right: 2px; }
+  .f-park .pc { border: 1px dashed var(--line); border-radius: 999px; padding: 2px 10px; }
+  .f-what { display: flex; flex-direction: column; gap: 10px; min-width: 0; }
+  .f-mx { display: flex; flex-direction: column; gap: 6px; }
+  .f-mr { display: grid; grid-template-columns: 96px repeat(3, minmax(0, 1fr)); gap: 6px; align-items: stretch; }
+  .f-mh { display: flex; flex-direction: column; align-items: center; gap: 2px; font-size: 12.5px; }
+  .f-mh svg { width: 40px; height: 30px; }
+  .f-ml { display: flex; align-items: center; font-size: 12.5px; font-weight: 700; line-height: 1.3; }
+  .f-mc { background: var(--card); border: 1px solid var(--line); border-radius: 8px; min-height: 52px; }
+  .f-eb { font-size: 10.5px; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); font-weight: 700; }
+  @media (max-width: 760px) {
+    .f-grid, .f-why { grid-template-columns: 1fr; }
+    .f-spec2 .s { flex-direction: column; align-items: flex-start; gap: 2px; }
+  }
+
   @media (prefers-reduced-motion: reduce) {
     *, *::before, *::after { animation: none !important; transition: none !important; }
   }
+
+  /* Narrative view and the bottom segmented control */
+  body { padding-bottom: 88px; }
+  .seg { position: fixed; bottom: 16px; left: 50%; transform: translateX(-50%); display: flex; gap: 2px; background: var(--card); border: 1px solid var(--line); border-radius: 999px; padding: 3px; box-shadow: var(--shadow); z-index: 30; }
+  .seg button { border: 0; background: transparent; padding: 6px 18px; border-radius: 999px; font-size: 13px; cursor: pointer; color: var(--muted); }
+  .seg button[aria-pressed="true"] { background: var(--fg); color: var(--bg); }
+  .nar { max-width: 760px; margin: 0 auto; }
+  .nar h1 { font-size: 30px; line-height: 1.2; margin: 0 0 6px; }
+  .nar .by { color: var(--muted); font-size: 13px; margin: 0 0 8px; }
+  .nar h2 { font-size: 21px; line-height: 1.3; margin: 44px 0 12px; }
+  .nar p, .nar li { font-size: 16px; line-height: 1.65; }
+  .nar p { margin: 0 0 12px; }
+  .nar ol, .nar ul { margin: 0 0 12px; padding-left: 22px; }
+  .nar li { margin-bottom: 6px; }
+  .nar figure { margin: 22px 0 8px; }
+  .nar figure svg { display: block; width: 100%; height: auto; }
+  .nar .slot { margin: 18px 0 14px; }
+  .nar .more { margin-top: 0; padding-top: 0; border-top: 0; }
+  .nar .more > h2, .nar .more > .lead, .nar .dpl > h2, .nar .dpl > .lead, .nar .dpr > h2 { display: none; }
+  .nar .dp { display: block; }
+  .nar .ways { grid-template-columns: 150px minmax(0, 1fr); }
+  .nar figure.sq svg { max-width: 440px; margin: 0 auto; }
+  .nar figcaption { font-size: 13px; line-height: 1.5; color: var(--muted); margin-top: 8px; }
+  .nar svg text { font-family: Arial, Helvetica, sans-serif; }
+  .nar .todo li { list-style: none; margin-left: -22px; }
+  .nar .todo li::before { content: "\2610"; margin-right: 8px; color: var(--muted); }
 </style>
 
 <div class="edit-bar"><span id="sv" class="sv"></span><button type="button" class="rst" id="rst">Reset</button><button type="button" id="edt" aria-pressed="false">Edit</button></div>
 <div class="wrap" id="wrap">
+<div id="v-int">
   <div class="story">
 
     <div class="left">
-      <svg id="chart" viewBox="0 0 500 500" role="img" aria-label="Chart with ability on the horizontal axis and engagement on the vertical axis, both centred. Opaque tool is low on both. No Tech is low ability and high engagement. Current AI is high ability and low engagement. Calm AI is high on both.">
+      <svg id="chart" viewBox="0 0 500 500" role="img" aria-label="Chart with ability on the horizontal axis and engagement on the vertical axis, both centred. Clumsy tool is low on both. No Tech is low ability and high engagement. Current AI is high ability and low engagement. Calm AI is high on both.">
         <rect class="q" data-k="1" x="0" y="250" width="250" height="250" fill="var(--c1)" fill-opacity=".1"/>
         <rect class="q" data-k="2" x="0" y="0" width="250" height="250" fill="var(--c2)" fill-opacity=".1"/>
         <rect class="q" data-k="3" x="250" y="250" width="250" height="250" fill="var(--c3)" fill-opacity=".1"/>
@@ -230,11 +359,11 @@
         <text class="end" x="262" y="40">high</text>
         <text class="end" x="262" y="492">low</text>
 
-        <g class="pt" data-k="1" tabindex="0" role="button" aria-label="1 Opaque tool">
+        <g class="pt" data-k="1" tabindex="0" role="button" aria-label="1 Clumsy tool">
           <circle class="ring-sel" cx="125" cy="322" r="26" fill="none" stroke="var(--c1)" stroke-width="3"/>
           <circle cx="125" cy="322" r="17" fill="var(--c1)"/>
           <text x="125" y="328" text-anchor="middle" style="fill:var(--on);font-size:16px;font-weight:700">1</text>
-          <text class="nm" x="125" y="372" text-anchor="middle">Opaque tool</text>
+          <text class="nm" x="125" y="372" text-anchor="middle">Clumsy tool</text>
           <text class="sb" x="125" y="394" text-anchor="middle">the tool blocks the activity</text>
         </g>
         <g class="pt" data-k="2" tabindex="0" role="button" aria-label="2 No Tech">
@@ -267,9 +396,9 @@
 
     <div class="right">
 
-      <!-- 1 Opaque tool -->
+      <!-- 1 Clumsy tool -->
       <article class="card panel" data-k="1" style="--c:var(--c1)">
-        <div class="p-head"><span class="badge">1</span><h2 data-eid="t1">Opaque tool</h2><span class="chip" data-eid="t2">Fails in any kitchen</span></div>
+        <div class="p-head"><span class="badge">1</span><h2 data-eid="t1">Clumsy tool</h2><span class="chip" data-eid="t2">Fails in any kitchen</span></div>
         <p class="desc" data-eid="t3">A &lt;heavy, dull knife&gt; cuts the hand-food loop from the tool side. Not No Tech with a bad knife.</p>
         <figure class="fig">
           <svg viewBox="0 0 420 340" role="img" aria-label="The cook's attention is trapped in the hands-on level, where the heavy knife cuts the loop between hand and fish.">
@@ -417,12 +546,6 @@
   </div>
 
   <section class="more">
-    <h2 data-eid="t14">Directions</h2>
-    <p class="lead" data-eid="t15">Each subtheme is a direction on the plane. All three are done by blending AI into the environment and the task.</p>
-    <div class="srows"><div class="srow"><div class="cell"><svg class="dchart" viewBox="0 0 300 300" role="img" aria-label="Enhanced analog engagement arrows" data-arrows="125,148,180,52;175,173,180,52;227,192,180,52"><rect x="0" y="0" width="300" height="300" fill="var(--soft)" fill-opacity=".6"/><rect x="150" y="0" width="150" height="150" fill="var(--c4)" fill-opacity=".14"/><line x1="0" y1="150" x2="288" y2="150" stroke="var(--fg)" stroke-width="2"/><polygon points="300,150 287,144 287,156" fill="var(--fg)"/><line x1="150" y1="300" x2="150" y2="12" stroke="var(--fg)" stroke-width="2"/><polygon points="150,0 144,13 156,13" fill="var(--fg)"/><g class="arrows"></g></svg><div class="tools"><button type="button" data-add>+ Arrow</button><button type="button" data-del>Delete</button></div></div><span class="n">1</span><div class="tx"><h3 data-eid="t16">Enhanced analog engagement</h3><p data-eid="t17">Make the multisensory loop between the person and the material richer.</p></div><p class="note" data-eid="t18"></p></div><div class="srow"><div class="cell"><svg class="dchart" viewBox="0 0 300 300" role="img" aria-label="Ambient awareness arrows" data-arrows="75,225,185,115;75,75,185,115;225,225,185,115"><rect x="0" y="0" width="300" height="300" fill="var(--soft)" fill-opacity=".6"/><rect x="150" y="0" width="150" height="150" fill="var(--c4)" fill-opacity=".14"/><line x1="0" y1="150" x2="288" y2="150" stroke="var(--fg)" stroke-width="2"/><polygon points="300,150 287,144 287,156" fill="var(--fg)"/><line x1="150" y1="300" x2="150" y2="12" stroke="var(--fg)" stroke-width="2"/><polygon points="150,0 144,13 156,13" fill="var(--fg)"/><g class="arrows"></g></svg><div class="tools"><button type="button" data-add>+ Arrow</button><button type="button" data-del>Delete</button></div></div><span class="n">2</span><div class="tx"><h3 data-eid="t19">Ambient awareness</h3><p data-eid="t20">Sense more of what is going on around the activity, ambiently, so attention stays free to move and the hands stay in the loop.</p></div><p class="note" data-eid="t21"></p></div><div class="srow"><div class="cell"><svg class="dchart" viewBox="0 0 300 300" role="img" aria-label="Extended physical ability arrows" data-arrows="75,75,235,115"><rect x="0" y="0" width="300" height="300" fill="var(--soft)" fill-opacity=".6"/><rect x="150" y="0" width="150" height="150" fill="var(--c4)" fill-opacity=".14"/><line x1="0" y1="150" x2="288" y2="150" stroke="var(--fg)" stroke-width="2"/><polygon points="300,150 287,144 287,156" fill="var(--fg)"/><line x1="150" y1="300" x2="150" y2="12" stroke="var(--fg)" stroke-width="2"/><polygon points="150,0 144,13 156,13" fill="var(--fg)"/><g class="arrows"></g></svg><div class="tools"><button type="button" data-add>+ Arrow</button><button type="button" data-del>Delete</button></div></div><span class="n">3</span><div class="tx"><h3 data-eid="t22">Extended physical ability</h3><p data-eid="t23">Do more in physical space: AI, robots, and devices extend what hands and bodies can do.</p></div><p class="note" data-eid="t24"></p></div></div>
-  </section>
-
-  <section class="more">
     <h2 data-eid="t25">Ways</h2>
     <p class="lead" data-eid="t26">More than one route leads up and right. The knife above is one of them.</p>
     <div class="ways">
@@ -443,7 +566,220 @@
       </div>
     </div>
   </section>
+
+  
+  <div class="f-banner">
+    <div class="f-bt" data-eid="t62"><b>More concretely,</b> the three ways are where the AI's output lives: in the tool, in the space, or in an agent. Below is the form that output takes.</div>
+    <svg viewBox="0 0 20 24" width="20" height="24" aria-hidden="true"><path d="M10 3 V19 M4 13 L10 19 L16 13" fill="none" stroke="var(--muted)" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+  </div>
+
+  <section class="more fx" aria-labelledby="f-title">
+    <div class="f-head"><div class="f-h2" id="f-title" role="heading" aria-level="2" data-eid="t70">Form</div><span class="f-date">Notes · Oct 23</span></div>
+    <div class="f-lead" data-eid="t71">Current AI puts almost everything in one corner, whatever the information is. Calm AI uses the whole space, and the right cell depends on the information.</div>
+
+    <div class="f-grid">
+      <svg class="fc" viewBox="0 0 520 420" role="img" aria-label="Two crossing axes. Horizontal: symbolic to analog. Vertical: beside the world to of the world. A talking object is symbolic and of the world. Engine hum or firelight is analog and of the world. A voice assistant or pop-up is symbolic and beside the world, the Current AI default. A screen-edge glow is analog and beside the world.">
+        <g class="fq" data-c="ts"><rect class="fq-bg" x="4" y="4" width="252" height="202" rx="10"/>
+          <svg class="ic" x="70" y="58" width="120" height="56" viewBox="0 0 120 56"><rect x="12" y="22" width="32" height="28" rx="6"/><rect class="o" x="54" y="6" width="54" height="26" rx="7"/><path class="o" d="M60 32 L48 40 L70 32"/><path class="o" d="M63 15 H98 M63 23 H86"/></svg>
+          <text class="ql" x="130" y="146" text-anchor="middle">A talking object</text></g>
+        <g class="fq" data-c="ta"><rect class="fq-bg" x="264" y="4" width="252" height="202" rx="10"/>
+          <svg class="ic" x="330" y="58" width="120" height="56" viewBox="0 0 120 56"><circle cx="28" cy="36" r="22" style="fill:var(--fg);fill-opacity:.07;stroke:none"/><rect x="12" y="22" width="32" height="28" rx="6"/><path class="o" d="M54 26 Q61 36 54 46"/><path class="o" d="M64 20 Q75 36 64 52" style="opacity:.7"/><path class="o" d="M74 14 Q90 34 74 54" style="opacity:.45"/></svg>
+          <text class="ql" x="390" y="146" text-anchor="middle">Engine hum, firelight</text></g>
+        <g class="fq" data-c="bs"><rect class="fq-bg" x="4" y="214" width="252" height="202" rx="10"/>
+          <rect x="71" y="244" width="118" height="20" rx="10" style="fill:var(--c3);fill-opacity:.14"/><text x="130" y="258" text-anchor="middle" style="fill:var(--c3);font-size:11.5px;font-weight:650">Current AI default</text>
+          <svg class="ic" x="70" y="272" width="120" height="56" viewBox="0 0 120 56"><rect x="12" y="22" width="32" height="28" rx="6"/><rect class="o" x="62" y="8" width="48" height="36" rx="5"/><path class="o" d="M70 18 H102 M70 26 H96 M70 34 H86"/></svg>
+          <text class="ql" x="130" y="352" text-anchor="middle">Voice assistant, pop-up</text></g>
+        <g class="fq" data-c="ba"><rect class="fq-bg" x="264" y="214" width="252" height="202" rx="10"/>
+          <svg class="ic" x="330" y="272" width="120" height="56" viewBox="0 0 120 56"><rect x="8" y="3" width="104" height="50" rx="7"/><rect x="24" y="22" width="28" height="24" rx="5"/><rect x="94" y="9" width="12" height="38" rx="6" style="fill:var(--fg);fill-opacity:.32;stroke:none"/></svg>
+          <text class="ql" x="390" y="352" text-anchor="middle">Screen-edge glow</text></g>
+
+        <line x1="8" y1="210" x2="500" y2="210" stroke="var(--fg)" stroke-width="2"/><polygon points="514,210 500,203 500,217" fill="var(--fg)"/>
+        <line x1="260" y1="414" x2="260" y2="20" stroke="var(--fg)" stroke-width="2"/><polygon points="260,6 253,20 267,20" fill="var(--fg)"/>
+        <line x1="70" y1="204" x2="70" y2="216" stroke="var(--fg)" stroke-width="2"/><line x1="450" y1="204" x2="450" y2="216" stroke="var(--fg)" stroke-width="2"/>
+        <text class="tk" x="70" y="232" text-anchor="middle">message</text><text class="tk" x="268" y="232">low-res</text><text class="tk" x="450" y="232" text-anchor="middle">field</text>
+
+        <text class="axl" x="500" y="182" text-anchor="end">Analog</text><text class="axs" x="500" y="198" text-anchor="end">cheaper, less precise</text>
+        <text class="axl" x="14" y="182">Symbolic</text><text class="axs" x="14" y="198">precise, needs attention</text>
+        <text class="axl" x="272" y="26">Of the world</text><text class="axs" x="272" y="42">the task's own stream</text>
+        <text class="axs" x="272" y="390">a second stream</text><text class="axl" x="272" y="408">Beside the world</text>
+      </svg>
+
+      <div class="f-what">
+        <div class="f-h3" role="heading" aria-level="3" data-eid="t119">What</div>
+        <div class="f-mx" role="table" aria-label="What: current activity or other activities, by hidden, future, remote">
+          <div role="row" class="f-mr">
+            <div role="columnheader"></div>
+            <div role="columnheader" class="f-mh"><svg class="ic" viewBox="0 0 48 36" aria-hidden="true"><rect x="6" y="4" width="32" height="28" rx="4"/><circle class="o" cx="22" cy="18" r="7" style="stroke-dasharray:3 3"/></svg><b>Hidden</b></div>
+            <div role="columnheader" class="f-mh"><svg class="ic" viewBox="0 0 48 36" aria-hidden="true"><path class="o" d="M4 32 Q18 30 24 18"/><path class="o" d="M24 18 Q28 10 38 6" style="stroke-dasharray:3 4"/><circle cx="24" cy="18" r="3" style="fill:var(--fg);stroke:none"/></svg><b>Future</b></div>
+            <div role="columnheader" class="f-mh"><svg class="ic" viewBox="0 0 48 36" aria-hidden="true"><path d="M14 2 V34" style="stroke-width:3.5"/><rect class="o" x="22" y="12" width="16" height="16" rx="3" style="stroke-dasharray:3 3"/></svg><b>Remote</b></div>
+          </div>
+          <div role="row" class="f-mr"><div role="rowheader" class="f-ml">Current activity</div><div role="cell" class="f-mc"></div><div role="cell" class="f-mc"></div><div role="cell" class="f-mc"></div></div>
+          <div role="row" class="f-mr"><div role="rowheader" class="f-ml">Other activities</div><div role="cell" class="f-mc"></div><div role="cell" class="f-mc"></div><div role="cell" class="f-mc"></div></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="f-spec2" role="group" aria-label="Message to field, in sound and in sight">
+      <div></div><div class="h">Message</div><div class="h">Low-res message</div><div class="h">Field</div>
+      <div class="r">Sound</div>
+      <div class="s"><svg class="ic" viewBox="0 0 64 40" aria-hidden="true"><rect class="o" x="6" y="5" width="52" height="22" rx="6"/><path class="o" d="M14 27 L10 35 L22 27"/><path class="o" d="M14 13 H50 M14 20 H38"/></svg><span>speech</span></div>
+      <div class="s"><svg class="ic" viewBox="0 0 64 40" aria-hidden="true"><circle class="o" cx="26" cy="30" r="5"/><path class="o" d="M31 30 V8 L41 12"/></svg><span>chime</span></div>
+      <div class="s"><svg class="ic" viewBox="0 0 64 40" aria-hidden="true"><path class="o" d="M4 18 Q11 6 18 18 T32 18 T46 18 T60 18"/><path d="M4 27 Q11 19 18 27 T32 27 T46 27 T60 27" style="opacity:.6"/></svg><span>hum</span></div>
+      <div class="r">Sight</div>
+      <div class="s"><svg class="ic" viewBox="0 0 64 40" aria-hidden="true"><rect class="o" x="8" y="4" width="48" height="32" rx="5"/><path class="o" d="M16 13 H48 M16 20 H40 M16 27 H30"/></svg><span>card</span></div>
+      <div class="s"><svg class="ic" viewBox="0 0 64 40" aria-hidden="true"><circle cx="12" cy="20" r="7"/><path d="M20 20 H44" style="stroke-dasharray:2 4"/><circle cx="52" cy="20" r="10" style="fill:var(--cy);fill-opacity:.25;stroke:none"/><circle cx="52" cy="20" r="7" style="fill:var(--cy);stroke:none"/></svg><span>Yo-Yo Machines</span></div>
+      <div class="s"><svg class="ic" viewBox="0 0 64 40" aria-hidden="true"><defs><radialGradient id="f-glow"><stop offset="0" style="stop-color:var(--fg);stop-opacity:.45"/><stop offset="1" style="stop-color:var(--fg);stop-opacity:0"/></radialGradient></defs><circle cx="32" cy="20" r="19" fill="url(#f-glow)" style="stroke:none"/></svg><span>glow</span></div>
+    </div>
+    <div class="f-cap" data-eid="t81">Sound and sight both run from message to field, and field cues still carry rich meaning. A low-res case: Yo-Yo Machines, paired devices that let distant people signal each other through light and movement (Gaver et al., CHI 2022).</div>
+
+    <div class="f-sub">
+      <div class="f-h3" role="heading" aria-level="3" data-eid="t100">How to be of the world</div>
+      <div class="f-ix" data-eid="t101">The AI rewrites what it perceives into a cue that is:</div>
+    </div>
+    <div class="f-cards">
+      <div class="f-card">
+        <span class="f-eb">Place</span>
+        <svg class="ic" viewBox="0 0 170 64" aria-hidden="true"><path d="M20 58 H150"/><rect x="62" y="34" width="46" height="24" rx="4"/><path class="o" d="M85 2 a9 9 0 0 1 9 9 c0 7 -9 16 -9 16 s-9 -9 -9 -16 a9 9 0 0 1 9 -9 z"/><circle cx="85" cy="11" r="3" style="fill:var(--fg);stroke:none"/></svg>
+        <div class="f-it" data-eid="t105">Grounded</div>
+        <div class="f-ix" data-eid="t106">At a real object or spot.</div>
+      </div>
+      <div class="f-card">
+        <span class="f-eb">Signal</span>
+        <svg class="ic" viewBox="0 0 170 64" aria-hidden="true"><path d="M52 56 H92 a4 4 0 0 0 4 -4 L90 30 H54 L48 52 a4 4 0 0 0 4 4 Z"/><path d="M60 30 Q72 20 84 30"/><path d="M95 40 L112 30"/><path class="o" d="M116 24 q5 -6 0 -12 M125 26 q5 -6 0 -12 M134 24 q5 -6 0 -12"/></svg>
+        <div class="f-it" data-eid="t109">Afforded</div>
+        <div class="f-ix" data-eid="t110">A signal the thing could make itself: a kettle hisses.</div>
+      </div>
+      <div class="f-card">
+        <span class="f-eb">Change</span>
+        <svg class="ic" viewBox="0 0 170 64" aria-hidden="true"><circle cx="30" cy="34" r="5" style="fill:var(--muted);stroke:none"/><path d="M40 34 H62 M56 29 L62 34 L56 39"/><rect x="74" y="23" width="14" height="22" rx="3"/><path class="o" d="M96 26 Q103 34 96 42 M104 20 Q114 34 104 48 M112 14 Q126 34 112 54"/></svg>
+        <div class="f-it" data-eid="t107">Coupled</div>
+        <div class="f-ix" data-eid="t108">Follows the state and your actions.</div>
+      </div>
+    </div>
+
+    <div class="f-park">
+      <span class="pl" data-eid="t92">To do</span>
+      <span class="pc" data-eid="t97">Why ability and engagement can both rise</span>
+      <span class="pc" data-eid="t93">Moving along the spectrum</span>
+      <span class="pc" data-eid="t94">Link to proactivity</span>
+      <span class="pc" data-eid="t95">Takeover on the action side, direction 3</span>
+      <span class="pc" data-eid="t96">Belonging vs legibility</span>
+    </div>
+  </section>
+
+  <section class="more">
+    <div class="dp">
+      <div class="dpl">
+    <h2 data-eid="t14">Directions</h2>
+    <p class="lead" data-eid="t15">Each subtheme is a direction on the plane. All three are done by blending AI into the environment and the task.</p>
+    <div class="srows"><div class="srow"><div class="cell"><svg class="dchart" viewBox="0 0 300 300" role="img" aria-label="Enhanced analog engagement arrows" data-arrows="125,148,180,52;175,173,180,52;227,192,180,52"><rect x="0" y="0" width="300" height="300" fill="var(--soft)" fill-opacity=".6"/><rect x="150" y="0" width="150" height="150" fill="var(--c4)" fill-opacity=".14"/><line x1="0" y1="150" x2="288" y2="150" stroke="var(--fg)" stroke-width="2"/><polygon points="300,150 287,144 287,156" fill="var(--fg)"/><line x1="150" y1="300" x2="150" y2="12" stroke="var(--fg)" stroke-width="2"/><polygon points="150,0 144,13 156,13" fill="var(--fg)"/><g class="arrows"></g></svg><div class="tools"><button type="button" data-add>+ Arrow</button><button type="button" data-del>Delete</button></div></div><span class="n">1</span><div class="tx"><h3 data-eid="t16">Enhanced analog engagement</h3><p data-eid="t17">Make the multisensory loop between the person and the material richer.</p></div></div><div class="srow"><div class="cell"><svg class="dchart" viewBox="0 0 300 300" role="img" aria-label="Ambient awareness arrows" data-arrows="75,225,185,115;75,75,185,115;225,225,185,115"><rect x="0" y="0" width="300" height="300" fill="var(--soft)" fill-opacity=".6"/><rect x="150" y="0" width="150" height="150" fill="var(--c4)" fill-opacity=".14"/><line x1="0" y1="150" x2="288" y2="150" stroke="var(--fg)" stroke-width="2"/><polygon points="300,150 287,144 287,156" fill="var(--fg)"/><line x1="150" y1="300" x2="150" y2="12" stroke="var(--fg)" stroke-width="2"/><polygon points="150,0 144,13 156,13" fill="var(--fg)"/><g class="arrows"></g></svg><div class="tools"><button type="button" data-add>+ Arrow</button><button type="button" data-del>Delete</button></div></div><span class="n">2</span><div class="tx"><h3 data-eid="t19">Ambient awareness</h3><p data-eid="t20">Sense more of what is going on around the activity, ambiently, so attention stays free to move and the hands stay in the loop.</p></div></div><div class="srow"><div class="cell"><svg class="dchart" viewBox="0 0 300 300" role="img" aria-label="Extended physical ability arrows" data-arrows="75,75,235,115"><rect x="0" y="0" width="300" height="300" fill="var(--soft)" fill-opacity=".6"/><rect x="150" y="0" width="150" height="150" fill="var(--c4)" fill-opacity=".14"/><line x1="0" y1="150" x2="288" y2="150" stroke="var(--fg)" stroke-width="2"/><polygon points="300,150 287,144 287,156" fill="var(--fg)"/><line x1="150" y1="300" x2="150" y2="12" stroke="var(--fg)" stroke-width="2"/><polygon points="150,0 144,13 156,13" fill="var(--fg)"/><g class="arrows"></g></svg><div class="tools"><button type="button" data-add>+ Arrow</button><button type="button" data-del>Delete</button></div></div><span class="n">3</span><div class="tx"><h3 data-eid="t22">Extended physical ability</h3><p data-eid="t23">Do more in physical space: AI, robots, and devices extend what hands and bodies can do.</p></div></div></div>
+      </div>
+      <div class="dpr" id="projects">
+    <h2 data-eid="t33">Projects</h2>
+    <div class="tri" id="tri">
+      <div class="vl vt" id="vl0"><span class="n"></span><span class="t"></span></div>
+      <div class="vl vl1" id="vl1"><span class="n"></span><span class="t"></span></div>
+      <div class="vl vr2" id="vl2"><span class="n"></span><span class="t"></span></div>
+      <svg id="trisvg" viewBox="0 0 520 320" role="img" aria-label="Projects drawn as a start circle and a larger end circle inside a triangle whose corners are the three directions">
+        <polygon points="260,40 110,280 410,280" fill="var(--soft)" fill-opacity=".6" stroke="var(--line)" stroke-width="2" stroke-linejoin="round"/>
+        <g id="trimarks"></g>
+      </svg>
+      <div id="trilabels"></div>
+    </div>
+    <div class="ptools"><button type="button" id="padd">+ Project</button><button type="button" id="pdel">Delete</button><input type="text" id="pname" placeholder="Project name"><label>Start <input type="range" id="rs" min="2" max="40" step="1"></label><label>End <input type="range" id="re" min="4" max="70" step="1"></label></div>
+      </div>
+    </div>
+  </section>
 </div>
+
+<div id="v-nar" class="nar" hidden>
+<h1 data-eid="n0">Calm AI: Vision Writeup</h1>
+<p class="by" data-eid="n1">Ziru Wei</p>
+
+<h2 data-eid="n2">Motivation: tools that cut the loop</h2>
+<p data-eid="n3">People do skilled physical work through a loop: they touch the material, sense how it responds, and adjust. A knife in the hand is not only a means to cut, it is how a cook feels the food. We argue that two kinds of tools break this loop, and that a third kind is possible.</p>
+<p data-eid="n4">The first kind is the clumsy tool. It is heavy and dull, and it cuts the loop from the tool side: the person can barely reach the goal, and the effort of operating the tool pushes the material out of attention. Both ability and engagement stay low.</p>
+<p data-eid="n5">The second kind is current AI. It raises what a person can reach, but it does so by competing for attention or taking over the task. The person is pulled out of the material and into a conversation with the system, so engagement drops even as ability rises. The loop is cut from the AI side.</p>
+
+<h2 data-eid="n6">Framing: ability and engagement</h2>
+<p data-eid="n7">We place any tool on a plane with two axes. Ability is how much a person can reach with the tool. Engagement is how much the person stays in touch with the material. Four cases fall out, and only one is high on both.</p>
+<figure class="sq"><svg viewBox="0 0 500 500" role="img" aria-label="Chart with ability on the horizontal axis and engagement on the vertical axis, both centred. Clumsy tool is low on both. No Tech is low ability and high engagement. Current AI is high ability and low engagement. Calm AI is high on both.">
+        <rect x="0" y="250" width="250" height="250" fill="var(--c1)" fill-opacity=".1"/>
+        <rect x="0" y="0" width="250" height="250" fill="var(--c2)" fill-opacity=".1"/>
+        <rect x="250" y="250" width="250" height="250" fill="var(--c3)" fill-opacity=".1"/>
+        <rect x="250" y="0" width="250" height="250" fill="var(--c4)" fill-opacity=".1"/>
+
+        <line x1="0" y1="250" x2="488" y2="250" stroke="var(--fg)" stroke-width="2"/>
+        <polygon points="500,250 486,243 486,257" fill="var(--fg)"/>
+        <line x1="250" y1="500" x2="250" y2="12" stroke="var(--fg)" stroke-width="2"/>
+        <polygon points="250,0 243,14 257,14" fill="var(--fg)"/>
+
+        <text class="ax" x="486" y="232" text-anchor="end">Ability</text>
+        <text class="end" x="8" y="270">low</text>
+        <text class="end" x="486" y="270" text-anchor="end">high</text>
+        <text class="ax" x="262" y="22">Engagement</text>
+        <text class="end" x="262" y="40">high</text>
+        <text class="end" x="262" y="492">low</text>
+
+        <g>
+          <circle cx="125" cy="322" r="17" fill="var(--c1)"/>
+          <text x="125" y="328" text-anchor="middle" style="fill:var(--on);font-size:16px;font-weight:700">1</text>
+          <text class="nm" x="125" y="372" text-anchor="middle">Clumsy tool</text>
+          <text class="sb" x="125" y="394" text-anchor="middle">the tool blocks the activity</text>
+        </g>
+        <g>
+          <circle cx="125" cy="178" r="17" fill="var(--c2)"/>
+          <text x="125" y="184" text-anchor="middle" style="fill:var(--on);font-size:16px;font-weight:700">2</text>
+          <text class="nm" x="125" y="128" text-anchor="middle">No Tech</text>
+          <text class="sb" x="125" y="150" text-anchor="middle">engaged, short reach</text>
+        </g>
+        <g>
+          <circle cx="375" cy="322" r="17" fill="var(--c3)"/>
+          <text x="375" y="328" text-anchor="middle" style="fill:var(--on);font-size:16px;font-weight:700">3</text>
+          <text class="nm" x="375" y="372" text-anchor="middle">Current AI</text>
+          <text class="sb" x="375" y="394" text-anchor="middle">raises reach, cuts the feed</text>
+        </g>
+        <g>
+          <circle cx="375" cy="178" r="17" fill="var(--c4)"/>
+          <text x="375" y="184" text-anchor="middle" style="fill:var(--on);font-size:16px;font-weight:700">4</text>
+          <text class="nm" x="375" y="128" text-anchor="middle">Calm AI</text>
+          <text class="sb" x="375" y="150" text-anchor="middle">attention moves freely</text>
+        </g>
+      </svg><figcaption data-eid="n8">Figure 1. Clumsy tool and Current AI each cut the loop, from opposite sides. No Tech keeps the loop but has a short reach. Calm AI is the case where attention moves freely and reach is high.</figcaption></figure>
+<p data-eid="n9">The move we study is from Current AI to Calm AI: keep the gain in ability, and give back the engagement.</p>
+<p data-eid="n10">In the kitchen, the four cases look like this.</p>
+<figure><svg viewBox="0 0 760 480" role="img" aria-label="The same cook and fish with each tool: clumsy tool, no tech, two ways current AI fails, and calm AI" font-size="13" font-family="Arial, Helvetica, sans-serif"><text x="24" y="28" font-size="15" font-weight="600" style="fill:var(--fg)">The same cook and fish with each tool</text><g><rect x="24" y="49" width="168" height="4" fill="var(--c1)"></rect><g><circle cx="33" cy="66" r="9" fill="var(--c1)"></circle><text x="33" y="70" text-anchor="middle" font-size="11" font-weight="700" style="fill:var(--on)">1</text></g><text x="50" y="70" font-size="12.5" font-weight="600" style="fill:var(--c1)">Clumsy tool</text><text x="50" y="87" font-size="11.5" style="fill:var(--c1)">&lt;heavy, dull knife&gt;</text><g transform="translate(24 98) scale(0.4)"><g opacity="0.45"><polygon points="130,28 404,28 354,138 80,138" fill="none" stroke="var(--line)" stroke-width="3"></polygon></g><polygon points="110,198 384,198 334,308 60,308" fill="none" stroke="var(--line)" stroke-width="3"></polygon><line x1="10" y1="166" x2="410" y2="166" stroke="var(--muted)" stroke-width="3" stroke-dasharray="6 5"></line><g fill="var(--soft)"><rect x="41" y="150" width="10" height="26"></rect><path d="M12 252 Q12 172 46 172 Q80 172 80 252 Z"></path><circle cx="46" cy="132" r="20"></circle></g><polygon points="205,222 352,222 324.7,282 177.7,282" fill="var(--card)" stroke="var(--line)" stroke-width="3"></polygon><g transform="translate(0,256) skewX(-24.44) translate(0,-256)"><path d="M262 256 Q282 241 308 247 Q322 251 330 242 L330 270 Q322 261 308 265 Q282 271 262 256 Z" fill="var(--soft)" stroke="var(--muted)" stroke-width="3" stroke-linejoin="round"></path><circle cx="274" cy="254" r="2" fill="var(--fg)"></circle></g><g><path d="M62 214 Q84 256 150 255" fill="none" stroke="var(--soft)" stroke-width="14" stroke-linecap="round"></path><ellipse cx="152" cy="255" rx="13" ry="10" fill="var(--soft)"></ellipse></g><ellipse cx="238" cy="257" rx="100" ry="30" fill="var(--cy)" fill-opacity="0.14" stroke="var(--cy)" stroke-width="5"></ellipse><g transform="translate(160,255) scale(1.12,1.9)" fill="var(--muted)" fill-opacity="1"><rect x="0" y="-4" width="24" height="8" rx="4"></rect><path d="M24 -5 L128 -2 Q138 3 124 6 L24 6 Z"></path></g><g fill="none" stroke="var(--cy)" stroke-width="5" stroke-linecap="round" stroke-dasharray="0.1 9" stroke-opacity="1"><path d="M180 245 Q221 214 258 245"></path><path d="M258 265 Q221 296 180 265"></path></g><g stroke="var(--fg)" stroke-width="6" stroke-linecap="round"><line x1="210" y1="219" x2="232" y2="241"></line><line x1="232" y1="219" x2="210" y2="241"></line></g></g></g><g><rect x="24" y="267" width="168" height="4" fill="var(--c2)"></rect><g><circle cx="33" cy="284" r="9" fill="var(--c2)"></circle><text x="33" y="288" text-anchor="middle" font-size="11" font-weight="700" style="fill:var(--on)">2</text></g><text x="50" y="288" font-size="12.5" font-weight="600" style="fill:var(--c2)">No Tech</text><text x="50" y="305" font-size="11.5" style="fill:var(--c2)">&lt;no knife&gt;</text><g transform="translate(24 316) scale(0.4)"><polygon points="130,28 404,28 354,138 80,138" fill="none" stroke="var(--line)" stroke-width="3"></polygon><polygon points="130,28 404,28 354,138 80,138" fill="var(--cy)" fill-opacity="0.14" stroke="var(--cy)" stroke-width="5" stroke-linejoin="round"></polygon><g transform="translate(246,76)"><ellipse rx="24" ry="17" fill="var(--card)" stroke="var(--muted)" stroke-width="3"></ellipse><g fill="none" stroke="var(--muted)" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M0 -9 Q8 1 0 8 Q-8 1 0 -9 Z"></path></g></g><polygon points="110,198 384,198 334,308 60,308" fill="none" stroke="var(--line)" stroke-width="3"></polygon><polygon points="110,198 384,198 334,308 60,308" fill="var(--cy)" fill-opacity="0.14" stroke="var(--cy)" stroke-width="5" stroke-linejoin="round"></polygon><line x1="10" y1="166" x2="410" y2="166" stroke="var(--muted)" stroke-width="3" stroke-dasharray="6 5"></line><g fill="var(--soft)"><rect x="41" y="150" width="10" height="26"></rect><path d="M12 252 Q12 172 46 172 Q80 172 80 252 Z"></path><circle cx="46" cy="132" r="20"></circle></g><polygon points="205,222 352,222 324.7,282 177.7,282" fill="var(--card)" stroke="var(--line)" stroke-width="3"></polygon><g transform="translate(0,256) skewX(-24.44) translate(0,-256)"><path d="M262 256 Q282 241 308 247 Q322 251 330 242 L330 270 Q322 261 308 265 Q282 271 262 256 Z" fill="var(--soft)" stroke="var(--muted)" stroke-width="3" stroke-linejoin="round"></path><circle cx="274" cy="254" r="2" fill="var(--fg)"></circle></g><g><path d="M62 214 Q92 262 244 256" fill="none" stroke="var(--soft)" stroke-width="14" stroke-linecap="round"></path><ellipse cx="248" cy="255" rx="13" ry="10" fill="var(--soft)"></ellipse></g><g fill="none" stroke="var(--cy)" stroke-width="4"><circle cx="246" cy="196" r="5" stroke-opacity="1"></circle><circle cx="246" cy="172" r="4.5" stroke-opacity="0.7"></circle><circle cx="246" cy="148" r="4" stroke-opacity="0.45"></circle><circle cx="246" cy="124" r="3.5" stroke-opacity="0.25"></circle></g><g fill="none" stroke="var(--cy)" stroke-width="5" stroke-linecap="round" stroke-dasharray="0.1 9"><path d="M238 243 Q262 216 290 243"></path><path d="M290 269 Q262 296 238 269"></path></g><g stroke="var(--cy)" stroke-width="5" fill="var(--cy)"><line x1="372" y1="152" x2="372" y2="184"></line><polygon points="372,141 364,155 380,155" stroke="none"></polygon><polygon points="372,195 364,181 380,181" stroke="none"></polygon></g></g><text x="134" y="349" font-size="10.5" font-weight="600" style="fill:var(--muted)">flavor</text></g><g><rect x="212" y="49" width="168" height="4" fill="var(--c3)"></rect><g><circle cx="221" cy="66" r="9" fill="var(--c3)"></circle><text x="221" y="70" text-anchor="middle" font-size="11" font-weight="700" style="fill:var(--on)">3</text></g><text x="238" y="70" font-size="12" font-weight="600" style="fill:var(--c3)">Current AI: competition</text><text x="238" y="87" font-size="11.5" style="fill:var(--c3)">&lt;speaking knife&gt;</text><g transform="translate(212 98) scale(0.4)"><g opacity="0.6"><polygon points="130,28 404,28 354,138 80,138" fill="none" stroke="var(--line)" stroke-width="3"></polygon><ellipse cx="246" cy="84" rx="24" ry="17" fill="var(--card)" stroke="var(--muted)" stroke-width="3"></ellipse><text x="246" y="94" text-anchor="middle" font-size="26" font-weight="700" style="fill:var(--fg)">?</text></g><polygon points="110,198 384,198 334,308 60,308" fill="none" stroke="var(--line)" stroke-width="3"></polygon><line x1="10" y1="166" x2="410" y2="166" stroke="var(--muted)" stroke-width="3" stroke-dasharray="6 5"></line><g fill="var(--soft)"><rect x="41" y="150" width="10" height="26"></rect><path d="M12 252 Q12 172 46 172 Q80 172 80 252 Z"></path><circle cx="46" cy="132" r="20"></circle></g><polygon points="205,222 352,222 324.7,282 177.7,282" fill="var(--card)" stroke="var(--line)" stroke-width="3"></polygon><g transform="translate(0,256) skewX(-24.44) translate(0,-256)"><path d="M262 256 Q282 241 308 247 Q322 251 330 242 L330 270 Q322 261 308 265 Q282 271 262 256 Z" fill="var(--soft)" stroke="var(--muted)" stroke-width="3" stroke-linejoin="round"></path><circle cx="274" cy="254" r="2" fill="var(--fg)"></circle></g><g><path d="M62 214 Q84 256 150 255" fill="none" stroke="var(--soft)" stroke-width="14" stroke-linecap="round"></path><ellipse cx="152" cy="255" rx="13" ry="10" fill="var(--soft)"></ellipse></g><g fill="none" stroke="var(--cy)" stroke-width="5" stroke-linecap="round" stroke-dasharray="0.1 9" stroke-opacity="0.22"><path d="M180 245 Q221 214 258 245"></path><path d="M258 265 Q221 296 180 265"></path></g><ellipse cx="229" cy="255" rx="82" ry="24" fill="var(--cy)" fill-opacity="0.14" stroke="var(--cy)" stroke-width="5"></ellipse><g transform="translate(160,255) scale(1,1)" fill="var(--c3)" fill-opacity="1"><rect x="0" y="-4" width="24" height="8" rx="4"></rect><path d="M24 -5 L128 -2 Q138 3 124 6 L24 6 Z"></path></g><g><rect x="168" y="188" width="96" height="32" rx="8" fill="var(--card)" stroke="var(--c3)" stroke-width="5"></rect><polygon points="192,219 212,219 196,240" fill="var(--card)" stroke="var(--c3)" stroke-width="5" stroke-linejoin="round"></polygon><rect x="191" y="217" width="22" height="6" fill="var(--card)"></rect><g stroke="var(--c3)" stroke-width="4" stroke-linecap="round"><line x1="180" y1="199" x2="252" y2="199"></line><line x1="180" y1="207" x2="240" y2="207"></line></g></g></g></g><g><rect x="212" y="267" width="168" height="4" fill="var(--c3)"></rect><g><circle cx="221" cy="284" r="9" fill="var(--c3)"></circle><text x="221" y="288" text-anchor="middle" font-size="11" font-weight="700" style="fill:var(--on)">3</text></g><text x="238" y="288" font-size="12" font-weight="600" style="fill:var(--c3)">Current AI: takeover</text><text x="238" y="305" font-size="11.5" style="fill:var(--c3)">&lt;auto knife&gt;</text><g transform="translate(212 316) scale(0.4)"><polygon points="130,28 404,28 354,138 80,138" fill="none" stroke="var(--line)" stroke-width="3" stroke-dasharray="8 6"></polygon><polygon points="130,28 404,28 354,138 80,138" fill="var(--cy)" fill-opacity="0.14" stroke="var(--cy)" stroke-width="5" stroke-linejoin="round" stroke-dasharray="12 8"></polygon><ellipse cx="246" cy="84" rx="24" ry="17" fill="var(--card)" stroke="var(--muted)" stroke-width="3"></ellipse><text x="246" y="94" text-anchor="middle" font-size="26" font-weight="700" style="fill:var(--fg)">?</text><polygon points="110,198 384,198 334,308 60,308" fill="none" stroke="var(--line)" stroke-width="3"></polygon><line x1="10" y1="166" x2="410" y2="166" stroke="var(--muted)" stroke-width="3" stroke-dasharray="6 5"></line><g fill="var(--soft)"><rect x="41" y="150" width="10" height="26"></rect><path d="M12 252 Q12 172 46 172 Q80 172 80 252 Z"></path><circle cx="46" cy="132" r="20"></circle></g><polygon points="205,222 352,222 324.7,282 177.7,282" fill="var(--card)" stroke="var(--line)" stroke-width="3"></polygon><g transform="translate(0,256) skewX(-24.44) translate(0,-256)"><path d="M262 256 Q282 241 308 247 Q322 251 330 242 L330 270 Q322 261 308 265 Q282 271 262 256 Z" fill="var(--soft)" stroke="var(--muted)" stroke-width="3" stroke-linejoin="round"></path><circle cx="274" cy="254" r="2" fill="var(--fg)"></circle></g><g><path d="M62 214 Q84 256 150 255" fill="none" stroke="var(--soft)" stroke-width="14" stroke-linecap="round"></path><ellipse cx="152" cy="255" rx="13" ry="10" fill="var(--soft)"></ellipse></g><ellipse cx="30" cy="30" rx="26" ry="15" fill="var(--cy)" fill-opacity="0.14" stroke="var(--cy)" stroke-width="5" stroke-dasharray="8 6"></ellipse><g fill="none" stroke="var(--cy)" stroke-width="5" stroke-linecap="round" stroke-dasharray="0.1 9" stroke-opacity="1"><path d="M180 245 Q221 214 258 245"></path><path d="M258 265 Q221 296 180 265"></path></g><g stroke="var(--fg)" stroke-width="6" stroke-linecap="round"><line x1="210" y1="219" x2="232" y2="241"></line><line x1="232" y1="219" x2="210" y2="241"></line></g><g transform="translate(200,255) scale(0.78,1)" fill="var(--c3)" fill-opacity="1"><rect x="0" y="-4" width="24" height="8" rx="4"></rect><path d="M24 -5 L128 -2 Q138 3 124 6 L24 6 Z"></path></g></g><text x="216" y="347" font-size="10.5" font-weight="600" style="fill:var(--cy)">drifting</text></g><g><rect x="400" y="49" width="336" height="4" fill="var(--c4)"></rect><g><circle cx="409" cy="66" r="9" fill="var(--c4)"></circle><text x="409" y="70" text-anchor="middle" font-size="11" font-weight="700" style="fill:var(--on)">4</text></g><text x="426" y="70" font-size="12.5" font-weight="600" style="fill:var(--c4)">Calm AI</text><text x="426" y="87" font-size="11.5" style="fill:var(--c4)"><tspan>&lt;lightweight sharp knife that hides</tspan><tspan x="426" dy="15">in the background&gt;</tspan></text><g transform="translate(400 112) scale(0.8)"><polygon points="130,28 404,28 354,138 80,138" fill="none" stroke="var(--line)" stroke-width="3"></polygon><polygon points="130,28 404,28 354,138 80,138" fill="var(--cy)" fill-opacity="0.14" stroke="var(--cy)" stroke-width="5" stroke-linejoin="round"></polygon><g transform="translate(150,70)"><ellipse rx="24" ry="17" fill="var(--card)" stroke="var(--muted)" stroke-width="3"></ellipse><g fill="none" stroke="var(--muted)" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><g><circle cx="-4" cy="0" r="7"></circle><circle cx="4" cy="0" r="7"></circle></g></g></g><g transform="translate(215,70)"><ellipse rx="24" ry="17" fill="var(--card)" stroke="var(--muted)" stroke-width="3"></ellipse><g fill="none" stroke="var(--muted)" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M0 -9 Q8 1 0 8 Q-8 1 0 -9 Z"></path></g></g><g transform="translate(280,70)"><ellipse rx="24" ry="17" fill="var(--card)" stroke="var(--muted)" stroke-width="3"></ellipse><g fill="none" stroke="var(--muted)" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M-10 -4 q3.3 -4 6.7 0 t6.7 0 t6.7 0 M-10 4 q3.3 -4 6.7 0 t6.7 0 t6.7 0"></path></g></g><g transform="translate(345,70)"><ellipse rx="24" ry="17" fill="var(--card)" stroke="var(--muted)" stroke-width="3"></ellipse><g fill="none" stroke="var(--muted)" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M0 -9 L2.6 -3 L9 -2.8 L4 1.6 L5.6 8 L0 4.6 L-5.6 8 L-4 1.6 L-9 -2.8 L-2.6 -3 Z"></path></g></g><polygon points="110,198 384,198 334,308 60,308" fill="none" stroke="var(--line)" stroke-width="3"></polygon><polygon points="110,198 384,198 334,308 60,308" fill="var(--cy)" fill-opacity="0.14" stroke="var(--cy)" stroke-width="5" stroke-linejoin="round"></polygon><line x1="10" y1="166" x2="410" y2="166" stroke="var(--muted)" stroke-width="3" stroke-dasharray="6 5"></line><g fill="var(--soft)"><rect x="41" y="150" width="10" height="26"></rect><path d="M12 252 Q12 172 46 172 Q80 172 80 252 Z"></path><circle cx="46" cy="132" r="20"></circle></g><polygon points="205,222 352,222 324.7,282 177.7,282" fill="var(--card)" stroke="var(--line)" stroke-width="3"></polygon><g transform="translate(0,256) skewX(-24.44) translate(0,-256)"><path d="M262 256 Q282 241 308 247 Q322 251 330 242 L330 270 Q322 261 308 265 Q282 271 262 256 Z" fill="var(--soft)" stroke="var(--muted)" stroke-width="3" stroke-linejoin="round"></path><circle cx="274" cy="254" r="2" fill="var(--fg)"></circle></g><g><path d="M62 214 Q84 256 150 255" fill="none" stroke="var(--soft)" stroke-width="14" stroke-linecap="round"></path><ellipse cx="152" cy="255" rx="13" ry="10" fill="var(--soft)"></ellipse></g><g transform="translate(160,255) scale(1,0.8)" fill="var(--fg)" fill-opacity="0.25"><rect x="0" y="-4" width="24" height="8" rx="4"></rect><path d="M24 -5 L128 -2 Q138 3 124 6 L24 6 Z"></path></g><g fill="none" stroke="var(--cy)" stroke-width="4"><circle cx="150" cy="196" r="5" stroke-opacity="1"></circle><circle cx="150" cy="172" r="4.5" stroke-opacity="0.7"></circle><circle cx="150" cy="148" r="4" stroke-opacity="0.45"></circle><circle cx="150" cy="124" r="3.5" stroke-opacity="0.25"></circle></g><g fill="none" stroke="var(--cy)" stroke-width="4"><circle cx="215" cy="196" r="5" stroke-opacity="1"></circle><circle cx="215" cy="172" r="4.5" stroke-opacity="0.7"></circle><circle cx="215" cy="148" r="4" stroke-opacity="0.45"></circle><circle cx="215" cy="124" r="3.5" stroke-opacity="0.25"></circle></g><g fill="none" stroke="var(--cy)" stroke-width="5" stroke-linecap="round" stroke-dasharray="0.1 9"><path d="M180 245 Q221 214 258 245"></path><path d="M258 265 Q221 296 180 265"></path></g><g stroke="var(--cy)" stroke-width="5" fill="var(--cy)"><line x1="100" y1="152" x2="100" y2="184"></line><polygon points="100,141 92,155 108,155" stroke="none"></polygon><polygon points="100,195 92,181 108,181" stroke="none"></polygon></g></g><text x="520" y="195" text-anchor="middle" font-size="11" font-weight="600" style="fill:var(--muted)">pairing</text><text x="572" y="195" text-anchor="middle" font-size="11" font-weight="600" style="fill:var(--muted)">flavor</text><text x="624" y="195" text-anchor="middle" font-size="11" font-weight="600" style="fill:var(--muted)">texture</text><text x="676" y="195" text-anchor="middle" font-size="11" font-weight="600" style="fill:var(--muted)">style</text><text x="728" y="239" text-anchor="end" font-size="10.5" font-weight="700" style="fill:var(--muted)">HIGH-LEVEL · COOKING</text><text x="728" y="260" text-anchor="end" font-size="10.5" font-weight="700" style="fill:var(--muted)">LOW-LEVEL · CUTTING</text></g><g><rect x="456" y="400" width="24" height="12" rx="3" fill="var(--cy)" fill-opacity="0.2" stroke="var(--cy)" stroke-width="2"></rect><text x="488" y="410" font-size="11.5" style="fill:var(--muted)">attention, free to move between levels</text><line x1="456" y1="428" x2="480" y2="428" stroke="var(--cy)" stroke-width="3.6" stroke-linecap="round" stroke-dasharray="0.1 6"></line><text x="488" y="432" font-size="11.5" style="fill:var(--muted)">engagement loop</text><circle cx="468" cy="448" r="4" fill="none" stroke="var(--cy)" stroke-width="2"></circle><text x="488" y="452" font-size="11.5" style="fill:var(--muted)">engagement rising to the dish</text></g></svg><figcaption data-eid="n11">Figure 2. Each case keeps the color it has in Figure 1. Blue marks where attention sits, the dotted loop is the cook's engagement with the fish, and the rising bubbles are engagement reaching up to the dish. Current AI fails in two ways, competition and takeover.</figcaption></figure>
+
+<h2 data-eid="n12">Calm AI: raising ability while keeping the loop</h2>
+<p data-eid="n13">Calm AI is AI that raises what a person can do while attention stays free to move. The person stays in touch with the material through the same multisensory, analog loop, and the AI can make that loop richer instead of replacing it.</p>
+<p data-eid="n14">Two principles follow. The AI does not disturb: it never competes with the material for attention. It does not take over: the person remains the one who acts. These are constraints on any design, not subthemes of their own.</p>
+<p data-eid="n15">We use engagement in a specific sense: staying in touch with the material. It is not time on task or enjoyment. A system can be used for hours and still score low, if the person only talks to it.</p>
+
+<h2 data-eid="n16">Ways: what moves a system up and right</h2>
+<p data-eid="n17">Ways say how the AI is built into the activity. The directions that follow say where on the plane a project lands. All three ways blend AI into the environment and the task, and each improves a different thing: the tool, the spatial interface, or the proactive agent.</p>
+<div class="slot" id="slot-ways"></div>
+<p data-eid="n19">Proactivity is a way, not a direction. It is one mechanism, next to the environment, for reaching the same quadrant.</p>
+
+<h2 data-eid="n20">Three directions</h2>
+<p data-eid="n21">Each direction leaves a baseline and ends in the Calm AI quadrant, but they differ in what the AI adds and where on the plane they land. All three work by blending AI into the environment and the task.</p>
+<div class="slot dp" id="slot-dirs"></div>
+<p data-eid="n22">Reading the charts: in direction 1 the arrows start from Current AI and rise, so reach is kept and engagement ends high but not far to the right. In direction 2 they can start from any of the three baselines, and ability means awareness ability. In direction 3 they end far to the right with engagement kept moderately high, and ability means action ability.</p>
+
+<h2 data-eid="n26">Concrete projects on the triangle</h2>
+<p data-eid="n27">A list of three directions cannot hold a project that belongs to two of them. We therefore arrange the directions as the corners of a triangle. A project is a shape with a start and an end, each with its own size, so it can sit on one corner, run along an edge, or cross the inside.</p>
+<div class="slot" id="slot-proj"></div>
+<p data-eid="n29">Projects planned next are placed here the same way, and the flagship should sit where it is more relevant to the theme than the others: the junction of directions 1 and 3 is still empty.</p>
+
+<h2 data-eid="n30">Open questions</h2>
+<ul class="todo">
+<li data-eid="n31">Which project is the flagship, and where does it sit on the triangle? It should be more relevant to the theme than the other projects.</li>
+<li data-eid="n32">How do we measure engagement as staying in touch with the material, rather than time on task or performance?</li>
+<li data-eid="n33">Should the three direction names share a prefix, or stay as they are?</li>
+<li data-eid="n34">Which venue fits this framing as a vision paper, CHI or UIST?</li>
+</ul>
+</div>
+</div>
+<div class="seg" role="group" aria-label="View"><button type="button" id="seg-int" aria-pressed="true">Interactive</button><button type="button" id="seg-nar" aria-pressed="false">Narrative</button></div>
 
 <script>
 (function () {
@@ -499,22 +835,72 @@
     if (!obj) return;
     if (obj.texts) texts.forEach(function (t) { var v = obj.texts[t.getAttribute('data-eid')]; if (typeof v === 'string') t.innerHTML = v; });
     if (obj.arrows && obj.arrows.length === state.length) { state = obj.arrows; charts.forEach(function (c, ci) { render(ci); }); }
+    if (obj.projects) { proj = migrate(obj.projects); renderProj(); }
   }
   function snapshot() {
     var o = {}; texts.forEach(function (t) { o[t.getAttribute('data-eid')] = t.innerHTML; });
-    return { texts: o, arrows: state };
+    return { at: Date.now(), texts: o, arrows: state, projects: proj };
   }
   var statusEl = document.getElementById('sv');
-  function status(msg) { if (statusEl) statusEl.textContent = msg; }
   var timer = null;
-  function pushToServer() {
-    var body = JSON.stringify(snapshot());
-    try { localStorage.setItem(KEY, body); } catch (e) {}
-    fetch('/api/state', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: body })
-      .then(function (r) { status(r.ok ? 'Saved to state.json' : 'Save failed'); })
-      .catch(function () { status('Not saved to file: open via start.command'); });
+  var serverOK = false;
+  function status(msg) { if (statusEl) statusEl.textContent = msg; }
+  var probe = fetch('/api/state').then(function (r) {
+    serverOK = r.ok && (r.headers.get('content-type') || '').indexOf('json') >= 0;
+  }).catch(function () {});
+  window.addEventListener('pagehide', function () {
+    if (!timer || !serverOK) return;
+    clearTimeout(timer); timer = null;
+    try { fetch('/api/state', { method: 'POST', keepalive: true, headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(snapshot()) }); } catch (e) {}
+  });
+
+  // File System Access handle, used with static servers such as VS Code Live Server
+  function idb(fn) {
+    return new Promise(function (res, rej) {
+      var rq = indexedDB.open('calm-ai-fs', 1);
+      rq.onupgradeneeded = function () { rq.result.createObjectStore('h'); };
+      rq.onerror = function () { rej(rq.error); };
+      rq.onsuccess = function () {
+        var tx = rq.result.transaction('h', 'readwrite'), r = fn(tx.objectStore('h'));
+        tx.oncomplete = function () { res(r.result); };
+        tx.onerror = function () { rej(tx.error); };
+      };
+    });
   }
-  function save() { clearTimeout(timer); status('Saving...'); timer = setTimeout(pushToServer, 250); }
+  async function getHandle(gesture) {
+    try {
+      var h = await idb(function (st) { return st.get('state'); });
+      if (!h && gesture && window.showSaveFilePicker) {
+        h = await window.showSaveFilePicker({ suggestedName: 'state.json', types: [{ description: 'JSON', accept: { 'application/json': ['.json'] } }] });
+        await idb(function (st) { return st.put(h, 'state'); });
+      }
+      if (!h) return null;
+      var p = await h.queryPermission({ mode: 'readwrite' });
+      if (p !== 'granted' && gesture) p = await h.requestPermission({ mode: 'readwrite' });
+      return p === 'granted' ? h : null;
+    } catch (e) { return null; }
+  }
+  async function writeStateFile(body, gesture) {
+    var h = await getHandle(gesture);
+    if (!h) return false;
+    var w = await h.createWritable(); await w.write(body); await w.close();
+    return true;
+  }
+  function stash() { try { localStorage.setItem(KEY, JSON.stringify(snapshot())); } catch (e) {} }
+  function persist(gesture) {
+    stash();
+    var body = JSON.stringify(snapshot());
+    if (serverOK) {
+      fetch('/api/state', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: body })
+        .then(function (r) { status(r.ok ? 'Saved to state.json' : 'Save failed'); })
+        .catch(function () { status('Save failed'); });
+    } else if (gesture) {
+      writeStateFile(body, true).then(function (ok) { status(ok ? 'Saved to state.json' : 'Kept in browser only (choose state.json to write the file)'); });
+    } else {
+      status('Kept in browser; written to state.json when you click Done');
+    }
+  }
+  function save() { stash(); status('Saving...'); clearTimeout(timer); timer = setTimeout(function () { timer = null; persist(false); }, 250); }
   function el(name, attrs) {
     var n = document.createElementNS(NS, name);
     for (var k in attrs) n.setAttribute(k, attrs[k]);
@@ -574,12 +960,156 @@
     });
   });
 
-  fetch('/api/state').then(function (r) { return r.json(); }).then(function (o) {
-    if (o && (o.texts || o.arrows)) apply(o); status('Loaded state.json');
-  }).catch(function () {
-    try { apply(JSON.parse(localStorage.getItem(KEY) || 'null')); } catch (e) {}
-    status('Not connected to file: open via start.command');
+  fetch('state.json', { cache: 'no-store' }).then(function (r) { if (!r.ok) throw 0; return r.json(); }).catch(function () { return null; }).then(function (fileObj) {
+    var local = null;
+    try { local = JSON.parse(localStorage.getItem(KEY) || 'null'); } catch (e) {}
+    var f = fileObj && (fileObj.texts || fileObj.arrows || fileObj.projects) ? fileObj : null;
+    var l = local && (local.texts || local.arrows || local.projects) ? local : null;
+    var newer = l && (!f || (l.at || 0) > (f.at || 0));
+    var use = newer ? l : (f || l);
+    if (use) apply(use);
+    if (newer) { status('Browser copy is newer: click Edit, then Done to write state.json'); probe.then(function () { if (serverOK) persist(false); }); }
+    else if (f) status('Loaded state.json');
+    else status('state.json is empty');
   });
+
+
+  // ---- Projects in the triangle
+  var proj = [];
+  var psel = -1;
+  var pe = [];
+  var TV = [[260, 40], [110, 280], [410, 280]];
+  function dirInfo() {
+    return Array.prototype.slice.call(document.querySelectorAll('.srow')).map(function (r) {
+      return { n: r.querySelector('.n').textContent, t: r.querySelector('h3').textContent };
+    });
+  }
+  function bary(x, y) {
+    var T = TV[0], L = TV[1], R = TV[2];
+    var den = (L[1] - R[1]) * (T[0] - R[0]) + (R[0] - L[0]) * (T[1] - R[1]);
+    var a = ((L[1] - R[1]) * (x - R[0]) + (R[0] - L[0]) * (y - R[1])) / den;
+    var b = ((R[1] - T[1]) * (x - R[0]) + (T[0] - R[0]) * (y - R[1])) / den;
+    return [a, b, 1 - a - b];
+  }
+  function clampTri(x, y) {
+    var w = bary(x, y).map(function (v) { return Math.max(0, v); });
+    var t = w[0] + w[1] + w[2] || 1;
+    w = w.map(function (v) { return v / t; });
+    return [w[0] * TV[0][0] + w[1] * TV[1][0] + w[2] * TV[2][0], w[0] * TV[0][1] + w[1] * TV[1][1] + w[2] * TV[2][1]];
+  }
+  function migrate(list) {
+    return (list || []).map(function (p) {
+      if (p.a && p.b) { if (!p.r) p.r = [6, 13]; return p; }
+      var x = p.x || 260, y = p.y || 200;
+      var s2 = clampTri(x, y + 40);
+      return { name: p.name || 'Project', a: s2, b: [x, y], r: [6, 13] };
+    });
+  }
+  function syncLabels() {
+    var info = dirInfo();
+    [0, 1, 2].forEach(function (i) {
+      var e = document.getElementById('vl' + i);
+      if (!e || !info[i]) return;
+      e.querySelector('.n').textContent = info[i].n;
+      e.querySelector('.t').textContent = info[i].t;
+    });
+  }
+  // closed outline of two circles: the two outer tangent lines plus the arcs at both ends
+  function hullPath(a, r1, b, r2) {
+    var dx = b[0] - a[0], dy = b[1] - a[1], d = Math.hypot(dx, dy);
+    function circ(c, r) { return 'M ' + (c[0] - r) + ' ' + c[1] + ' a ' + r + ' ' + r + ' 0 1 0 ' + (2 * r) + ' 0 a ' + r + ' ' + r + ' 0 1 0 ' + (-2 * r) + ' 0 Z'; }
+    if (d <= Math.abs(r1 - r2) + 0.5) return circ(r1 > r2 ? a : b, Math.max(r1, r2));
+    var th = Math.atan2(dy, dx), be = Math.acos((r1 - r2) / d);
+    function pt(c, r, ang) { return (c[0] + r * Math.cos(ang)).toFixed(2) + ' ' + (c[1] + r * Math.sin(ang)).toFixed(2); }
+    var up = th + be, dn = th - be;
+    var big2 = 2 * be > Math.PI ? 1 : 0, big1 = 2 * be < Math.PI ? 1 : 0;
+    return 'M ' + pt(a, r1, up) + ' L ' + pt(b, r2, up) + ' A ' + r2 + ' ' + r2 + ' 0 ' + big2 + ' 0 ' + pt(b, r2, dn) +
+      ' L ' + pt(a, r1, dn) + ' A ' + r1 + ' ' + r1 + ' 0 ' + big1 + ' 0 ' + pt(a, r1, up) + ' Z';
+  }
+  function placeProj(i) {
+    var p = proj[i], o = pe[i];
+    if (!p.r) p.r = [6, 13];
+    o.line.setAttribute('d', hullPath(p.a, p.r[0], p.b, p.r[1]));
+    o.ca.setAttribute('r', p.r[0]); o.cb.setAttribute('r', p.r[1]);
+    o.ca.setAttribute('cx', p.a[0]); o.ca.setAttribute('cy', p.a[1]);
+    o.cb.setAttribute('cx', p.b[0]); o.cb.setAttribute('cy', p.b[1]);
+    // the name runs along the shape's axis, centred on it, kept upright
+    var ang = Math.atan2(p.b[1] - p.a[1], p.b[0] - p.a[0]) * 180 / Math.PI;
+    if (ang > 90) ang -= 180; else if (ang < -90) ang += 180;
+    o.lab.className = 'plabel c';
+    o.lab.style.left = ((p.a[0] + p.b[0]) / 2) + 'px';
+    o.lab.style.top = ((p.a[1] + p.b[1]) / 2) + 'px';
+    o.lab.style.transform = 'translate(-50%, -50%) rotate(' + ang.toFixed(1) + 'deg)';
+  }
+  function renderProj() {
+    syncLabels();
+    var marks = document.getElementById('trimarks'), labs = document.getElementById('trilabels');
+    while (marks.firstChild) marks.removeChild(marks.firstChild);
+    labs.innerHTML = '';
+    pe = [];
+    proj.forEach(function (p, i) {
+      var g = el('g', { 'class': 'pj' + (i === psel ? ' sel' : '') });
+      var line = el('path', { 'class': 'hull' });
+      var ca = el('circle', { r: 6 }), cb = el('circle', { r: 13 });
+      g.appendChild(line); g.appendChild(ca); g.appendChild(cb);
+      marks.appendChild(g);
+      var lab = document.createElement('div');
+      lab.textContent = p.name;
+      labs.appendChild(lab);
+      pe.push({ line: line, ca: ca, cb: cb, lab: lab, g: g });
+      placeProj(i);
+      [[ca, 'a'], [cb, 'b']].forEach(function (pair) {
+        pair[0].addEventListener('pointerdown', function (e) {
+          if (!editing) return;
+          e.preventDefault();
+          psel = i; markSel();
+          var svg = document.getElementById('trisvg');
+          function mv(ev) {
+            var pt = svg.createSVGPoint(); pt.x = ev.clientX; pt.y = ev.clientY;
+            var q = pt.matrixTransform(svg.getScreenCTM().inverse());
+            p[pair[1]] = clampTri(q.x, q.y);
+            placeProj(i);
+          }
+          function up() { document.removeEventListener('pointermove', mv); document.removeEventListener('pointerup', up); save(); }
+          document.addEventListener('pointermove', mv);
+          document.addEventListener('pointerup', up);
+        });
+      });
+    });
+    syncSliders();
+  }
+  function syncSliders() {
+    var rs = document.getElementById('rs'), re = document.getElementById('re');
+    var p = proj[psel];
+    var pn = document.getElementById('pname');
+    rs.disabled = re.disabled = pn.disabled = !p;
+    if (p) { rs.value = p.r[0]; re.value = p.r[1]; pn.value = p.name; } else pn.value = '';
+  }
+  function markSel() { pe.forEach(function (o, i) { o.g.setAttribute('class', 'pj' + (i === psel ? ' sel' : '')); }); syncSliders(); }
+  document.getElementById('pname').addEventListener('input', function (e) {
+    var p = proj[psel]; if (!p) return;
+    p.name = e.target.value; if (pe[psel]) pe[psel].lab.textContent = p.name; save();
+  });
+  [['rs', 0], ['re', 1]].forEach(function (pr) {
+    document.getElementById(pr[0]).addEventListener('input', function (e) {
+      var p = proj[psel]; if (!p) return;
+      p.r[pr[1]] = +e.target.value; placeProj(psel); save();
+    });
+  });
+  document.getElementById('padd').addEventListener('click', function () {
+    if (proj.length >= 8) return;
+    var k = proj.length;
+    var b = clampTri(255, 225 - k * 36);
+    proj.push({ name: 'Project name', a: clampTri(b[0] - 40, b[1] + 40), b: b, r: [6, 13] });
+    psel = proj.length - 1; renderProj(); save();
+  });
+  document.getElementById('pdel').addEventListener('click', function () {
+    if (!proj.length) return;
+    var i = psel >= 0 && psel < proj.length ? psel : proj.length - 1;
+    proj.splice(i, 1); psel = -1; renderProj(); save();
+  });
+  Array.prototype.slice.call(document.querySelectorAll('.srow h3, .srow .n')).forEach(function (h) { h.addEventListener('input', syncLabels); });
+  renderProj();
 
   var btn = document.getElementById('edt');
   btn.addEventListener('click', function () {
@@ -588,14 +1118,49 @@
     btn.setAttribute('aria-pressed', editing ? 'true' : 'false');
     btn.textContent = editing ? 'Done' : 'Edit';
     texts.forEach(function (t) { if (editing) t.setAttribute('contenteditable', 'true'); else t.removeAttribute('contenteditable'); });
-    if (!editing) save();
+    renderProj();
+    if (!editing) { clearTimeout(timer); timer = null; persist(true); }
   });
   texts.forEach(function (t) { t.addEventListener('input', save); });
   document.getElementById('rst').addEventListener('click', function () {
     try { localStorage.removeItem(KEY); } catch (e) {}
-    fetch('/api/state', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: '{}' }).then(function () { location.reload(); }).catch(function () { location.reload(); });
+    fetch('/api/state?reset=1', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: '{}' }).then(function () { location.reload(); }).catch(function () { location.reload(); });
   });
 })();
+
+(function () {
+  var vi = document.getElementById('v-int'), vn = document.getElementById('v-nar');
+  var bi = document.getElementById('seg-int'), bn = document.getElementById('seg-nar');
+  // The Ways, Directions and Projects blocks are the same live components, moved between the two views.
+  var parts = [
+    { el: vi.querySelector('section.more'), slot: document.getElementById('slot-ways') },
+    { el: vi.querySelector('.dpl'), slot: document.getElementById('slot-dirs') },
+    { el: vi.querySelector('.dpr'), slot: document.getElementById('slot-proj') }
+  ].filter(function (p) { return p.el && p.slot; });
+  parts.forEach(function (p) { p.home = document.createComment('home'); p.el.parentNode.insertBefore(p.home, p.el); });
+  function place(nar) {
+    parts.forEach(function (p) {
+      if (nar) p.slot.appendChild(p.el);
+      else p.home.parentNode.insertBefore(p.el, p.home.nextSibling);
+    });
+  }
+  function show(v) {
+    var nar = v === 'narrative';
+    place(nar);
+    vi.hidden = nar; vn.hidden = !nar;
+    bi.setAttribute('aria-pressed', nar ? 'false' : 'true');
+    bn.setAttribute('aria-pressed', nar ? 'true' : 'false');
+    try { sessionStorage.setItem('calm-view', v); } catch (e) {}
+    if (location.hash !== (nar ? '#narrative' : '')) history.replaceState(null, '', nar ? '#narrative' : location.pathname + location.search);
+    window.scrollTo(0, 0);
+  }
+  bi.addEventListener('click', function () { show('interactive'); });
+  bn.addEventListener('click', function () { show('narrative'); });
+  var v = location.hash === '#narrative' ? 'narrative' : null;
+  if (!v) { try { v = sessionStorage.getItem('calm-view'); } catch (e) {} }
+  if (v === 'narrative') show('narrative');
+})();
+
 </script>
 
 </body></html>

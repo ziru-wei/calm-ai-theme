@@ -4,7 +4,7 @@ import http.server, json, os, socketserver, sys, threading, webbrowser
 
 ROOT = os.path.dirname(os.path.abspath(__file__))
 STATE = os.path.join(ROOT, "state.json")
-PORT = int(sys.argv[1]) if len(sys.argv) > 1 else 8765
+PORT = int(sys.argv[1]) if len(sys.argv) > 1 else 5500
 
 
 class Handler(http.server.SimpleHTTPRequestHandler):
@@ -37,6 +37,9 @@ class Handler(http.server.SimpleHTTPRequestHandler):
             obj = json.loads(self.rfile.read(n) or b"{}")
         except ValueError:
             return self._json(400, {"error": "bad json"})
+        # never overwrite saved edits with an empty state unless Reset asked for it
+        if not obj.get("texts") and not obj.get("arrows") and "reset=1" not in self.path:
+            return self._json(200, {"ok": True, "skipped": "empty"})
         tmp = STATE + ".tmp"
         with open(tmp, "w", encoding="utf-8") as f:
             json.dump(obj, f, ensure_ascii=False, indent=2)

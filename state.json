@@ -1,1 +1,163 @@
-{}
+{
+  "at": 1792618224679,
+  "texts": {
+    "t0": "A cook thinks about the dish through the hands. Touch, sound, smell, and sight keep the cook in a multisensory, analog loop with the fish, which helps them focus while much else happens ambiently in the background, and what the hands notice feeds their thinking about flavor, texture, and style. Current AI adds ability but pulls people out of that loop, by competing for attention or taking over the task. Calm AI keeps the loop, and can make it richer.",
+    "t1": "Clumsy tool",
+    "t2": "Fails in any kitchen",
+    "t3": "A &lt;heavy, dull knife&gt; cuts the hand-food loop from the tool side. Not No Tech with a bad knife.",
+    "t4": "No Tech",
+    "t5": "Baseline",
+    "t6": "Nothing between cook and food. The loop is intact, but attention cannot reach far toward the dish.",
+    "t7": "Current AI",
+    "t8": "Raises reach, cuts the feed",
+    "t9": "Ability rises, engagement falls, for two reasons.",
+    "t10": "Calm AI",
+    "t11": "The goal",
+    "t12": "The AI sits in the activity. The cook chooses: stay with the cut or step back to the dish.",
+    "t13": "<b>Calm AI</b> keeps both high. The person keeps the <u>freedom</u> to decide where attention goes, so calm does not mean the AI is quiet.",
+    "t25": "Ways",
+    "t26": "going up and right by blending AI into the environment and the task.",
+    "t27": "A better knife",
+    "t28": "the tool that disappears into the activity.",
+    "t29": "A good environment",
+    "t30": "the spatial interface itself carries the help and helps you focus.",
+    "t31": "A helpful sous-chef",
+    "t32": "the proactive agent that supports and does not take over, and does not ask too much: it reads the situation as if it could read your mind.",
+    "t14": "Research Directions &amp; Projects",
+    "t15": "<br>",
+    "t16": "Augmented analog engagement",
+    "t17": "Make the loop between the person and the material richer.",
+    "t19": "Ambient awareness",
+    "t20": "Sense more of what is going on around the activity unobtrusively.<div>(ability here is awareness ability)</div>",
+    "t22": "Physical AI in-the-loop",
+    "t23": "Devices/systems that extend what hands and bodies can do without cutting the loop.<br>(ability here is action ability)",
+    "t33": "<br>",
+    "n0": "Calm AI: Vision Writeup",
+    "n1": "Ziru Wei",
+    "n2": "Motivation: tools that cut the loop",
+    "n3": "People do skilled physical work through a loop: they touch the material, sense how it responds, and adjust. A knife in the hand is not only a means to cut, it is how a cook feels the food. We argue that two kinds of tools break this loop, and that a third kind is possible.",
+    "n4": "The first kind is the clumsy tool. It is heavy and dull, and it cuts the loop from the tool side: the person can barely reach the goal, and the effort of operating the tool pushes the material out of attention. Both ability and engagement stay low.",
+    "n5": "The second kind is current AI. It raises what a person can reach, but it does so by competing for attention or taking over the task. The person is pulled out of the material and into a conversation with the system, so engagement drops even as ability rises. The loop is cut from the AI side.",
+    "n6": "Framing: ability and engagement",
+    "n7": "We place any tool on a plane with two axes. Ability is how much a person can reach with the tool. Engagement is how much the person stays in touch with the material. Four cases fall out, and only one is high on both.",
+    "n8": "Figure 1. Clumsy tool and Current AI each cut the loop, from opposite sides. No Tech keeps the loop but has a short reach. Calm AI is the case where attention moves freely and reach is high.",
+    "n9": "The move we study is the arrow from Current AI to Calm AI: keep the gain in ability, and give back the engagement.",
+    "n10": "In the kitchen, the four cases look like this.",
+    "n11": "Figure 2. Each case keeps the color it has in Figure 1. Blue marks where attention sits, the dotted loop is the cook's engagement with the fish, and the rising bubbles are engagement reaching up to the dish. Current AI fails in two ways, competition and takeover.",
+    "n12": "Calm AI: raising ability while keeping the loop",
+    "n13": "Calm AI is AI that raises what a person can do while attention stays free to move. The person stays in touch with the material through the same multisensory, analog loop, and the AI can make that loop richer instead of replacing it.",
+    "n14": "Two principles follow. The AI does not disturb: it never competes with the material for attention. It does not take over: the person remains the one who acts. These are constraints on any design, not subthemes of their own.",
+    "n15": "We use engagement in a specific sense: staying in touch with the material. It is not time on task or enjoyment. A system can be used for hours and still score low, if the person only talks to it.",
+    "n16": "Ways: what moves a system up and right",
+    "n17": "Ways say how the AI is built into the activity. The directions that follow say where on the plane a project lands. All three ways blend AI into the environment and the task, and each improves a different thing: the tool, the spatial interface, or the proactive agent.",
+    "n19": "Proactivity is a way, not a direction. It is one mechanism, next to the environment, for reaching the same quadrant.",
+    "n20": "Three directions",
+    "n21": "Each direction leaves a baseline and ends in the Calm AI quadrant, but they differ in what the AI adds and where on the plane they land. All three work by blending AI into the environment and the task.",
+    "n22": "<b>Augmented analog engagement.</b> Make the loop between the person and the material richer. Arrows start from Current AI and rise: reach is kept, engagement ends high but not far to the right.",
+    "n26": "Concrete projects on the triangle",
+    "n27": "A list of three directions cannot hold a project that belongs to two of them. We therefore arrange the directions as the corners of a triangle. A project is a shape with a start and an end, each with its own size, so it can sit on one corner, run along an edge, or cross the inside.",
+    "n29": "Projects planned next are placed here the same way, and the flagship should sit where it is more relevant to the theme than the others: the junction of directions 1 and 3 is still empty.",
+    "n30": "Open questions",
+    "n31": "Which project is the flagship, and where does it sit on the triangle? It should be more relevant to the theme than the other projects.",
+    "n32": "How do we measure engagement as staying in touch with the material, rather than time on task or performance?",
+    "n33": "Should the three direction names share a prefix, or stay as they are?",
+    "n34": "Which venue fits this framing as a vision paper, CHI or UIST?"
+  },
+  "arrows": [
+    [
+      [
+        175.38461303710938,
+        188.53843688964844,
+        180,
+        52
+      ],
+      [
+        227,
+        192,
+        229.61537170410156,
+        56.99998092651367
+      ]
+    ],
+    [
+      [
+        102.69229888916016,
+        201.2307891845703,
+        238.8461456298828,
+        30.461566925048828
+      ],
+      [
+        73.84614562988281,
+        105.46155548095703,
+        241.15383911132812,
+        30.461566925048828
+      ],
+      [
+        211.15383911132812,
+        217.38462829589844,
+        237.6923065185547,
+        30.461566925048828
+      ]
+    ],
+    [
+      [
+        83.07691955566406,
+        90.46150970458984,
+        280.3846130371094,
+        93.92304992675781
+      ],
+      [
+        186.92306518554688,
+        197.76919555664062,
+        281.5384521484375,
+        100.84613037109375
+      ]
+    ]
+  ],
+  "projects": [
+    {
+      "name": "PROACH",
+      "a": [
+        168.65625000000003,
+        247.48828125
+      ],
+      "b": [
+        302.25000000000006,
+        255.93750000000003
+      ],
+      "r": [
+        36,
+        8
+      ]
+    },
+    {
+      "name": "ambientGlow",
+      "a": [
+        259.32421875,
+        86.58984375
+      ],
+      "b": [
+        163.921875,
+        248.99609375000003
+      ],
+      "r": [
+        19,
+        32
+      ]
+    },
+    {
+      "name": "generated tangible interactions",
+      "a": [
+        354,
+        239.24999999999997
+      ],
+      "b": [
+        263,
+        104.75
+      ],
+      "r": [
+        6,
+        41
+      ]
+    }
+  ]
+}
