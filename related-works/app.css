@@ -247,4 +247,4 @@ body.detail-mode #detail-page{display:flex;position:fixed;z-index:29;top:0;botto
 .back-link:hover{opacity:1;text-decoration:underline}
 .ro-tag{display:none;font-size:11px;letter-spacing:.04em;text-transform:uppercase;opacity:.55;border:1px solid currentColor;border-radius:999px;padding:1px 8px;margin-left:10px}
 body.readonly .ro-tag{display:inline-block}
-body.readonly #add-card,body.readonly #agent-add,body.readonly #manage-labels,body.readonly .label-more,body.readonly .page-delete,body.readonly .axis-add-dimension,body.readonly .axis-dim-action{display:none!important}
+body.readonly #add-card,body.readonly .add-column-card,body.readonly #agent-add,body.readonly #manage-labels,body.readonly .label-more,body.readonly .page-delete,body.readonly .axis-add-dimension,body.readonly .axis-dim-action{display:none!important}
