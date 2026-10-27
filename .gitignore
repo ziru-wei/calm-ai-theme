@@ -1,4 +1,5 @@
 .DS_Store
 state.json.tmp
+narrative.md.tmp
 related-works/*.tmp
 node_modules/

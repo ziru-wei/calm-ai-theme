@@ -12,7 +12,60 @@ let saveTimer=0,saveChain=Promise.resolve(),settingsTimer=0,activePage=null,acti
 const MEDIA_TYPES=new Set(['image/jpeg','image/png','image/gif']);
 const idRegex=/^[a-z0-9-]{1,48}$/;
 let RO=false;
-const dataJSON=async(url,opts={})=>{if(RO&&opts.method&&opts.method!=='GET')return {ok:true};const r=await fetch(url,{cache:'no-store',...opts});const data=await r.json();if(!r.ok)throw new Error(data.error||`Request failed: ${r.status}`);return data;};
+
+// Static hosting (e.g. GitHub Pages) has no server.js backend. When editing is unlocked there
+// (the /2001 trick) writes are instead saved straight to the related-works/ folder on disk via
+// the File System Access API: the user picks that folder once (the "Connect folder to save"
+// button), the handle is cached in IndexedDB, and every save after that writes the matching
+// file directly — no download/re-commit round trip needed.
+const FS=(function(){
+ function idbTx(fn){return new Promise((res,rej)=>{const rq=indexedDB.open('calm-ai-fs',1);
+  rq.onupgradeneeded=()=>{if(!rq.result.objectStoreNames.contains('h'))rq.result.createObjectStore('h');};
+  rq.onerror=()=>rej(rq.error);
+  rq.onsuccess=()=>{const tx=rq.result.transaction('h','readwrite'),r=fn(tx.objectStore('h'));tx.oncomplete=()=>res(r.result);tx.onerror=()=>rej(tx.error);};
+ });}
+ let dirHandle=null;
+ async function connect(){
+  if(!window.showDirectoryPicker){toast('This browser cannot save files directly; use node server.js locally instead.');return false;}
+  try{const h=await window.showDirectoryPicker({id:'calm-related-works',mode:'readwrite'});await idbTx(st=>st.put(h,'dir'));dirHandle=h;return true;}
+  catch(e){return false;}
+ }
+ async function getDir(gesture){
+  if(dirHandle)return dirHandle;
+  const h=await idbTx(st=>st.get('dir'));
+  if(!h)return gesture?null:null;
+  const p=await h.queryPermission({mode:'readwrite'});
+  if(p==='granted'){dirHandle=h;return h;}
+  if(gesture){const pr=await h.requestPermission({mode:'readwrite'});if(pr==='granted'){dirHandle=h;return h;}}
+  return null;
+ }
+ async function writeFile(dir,path,data){
+  const parts=path.split('/');const name=parts.pop();
+  let d=dir;for(const seg of parts)d=await d.getDirectoryHandle(seg,{create:true});
+  const fh=await d.getFileHandle(name,{create:true});const w=await fh.createWritable();await w.write(data);await w.close();
+ }
+ // Map an api/* URL + body to a file under related-works/ and write it.
+ async function route(url,opts){
+  const dir=await getDir(false);
+  if(!dir)throw new Error('Not connected — click "Connect folder to save" once, then edit again.');
+  const path=url.replace(/^api\//,'');
+  if(path==='catalog')return writeFile(dir,'catalog.json',opts.body);
+  if(path==='settings')return writeFile(dir,'settings.json',opts.body);
+  if(path==='axes')return writeFile(dir,'axes.json',opts.body);
+  const noteId=path.match(/^notes\/(.+)$/);
+  if(noteId)return writeFile(dir,`notes/${noteId[1]}.json`,opts.body);
+  throw new Error('This kind of edit (e.g. pasted images) needs node server.js running locally.');
+ }
+ return {connect,getDir,route,get connected(){return !!dirHandle;}};
+})();
+
+const dataJSON=async(url,opts={})=>{
+ if(RO&&opts.method&&opts.method!=='GET'){
+  if(window.CALM_EDIT_UNLOCKED){await FS.route(url,opts);return {ok:true};}
+  return {ok:true};
+ }
+ const r=await fetch(url,{cache:'no-store',...opts});const data=await r.json();if(!r.ok)throw new Error(data.error||`Request failed: ${r.status}`);return data;
+};
 function toast(message){const m=$('#message');m.textContent=message;m.classList.add('show');clearTimeout(toast._timer);toast._timer=setTimeout(()=>m.classList.remove('show'),2500);}
 function labelFor(id){return catalog.labels.find(x=>x.id===id);}
 function allLabels(){return [...catalog.labels,{id:'',name:'Unlabeled',color:'#d7dce2'}];}
@@ -524,13 +577,31 @@ async function loadData(){
    return {data,settings,allNotes,figData,axisData};
   }
  }catch{}
- RO=true;document.body.classList.add('readonly');lockEditing();
+ RO=true;
+ if(window.CALM_EDIT_UNLOCKED){initFsSave();}
+ else{document.body.classList.add('readonly');lockEditing();}
  const saved=await staticJSON('catalog.json',null);
  const data=saved||await staticJSON('catalog.defaults.json',{version:1,labels:[],cards:[]});
  const [settings,axisData]=await Promise.all([staticJSON('settings.json',{}),staticJSON('axes.json',{dimensions:[]})]);
  const notesObj={};
  if(saved)await Promise.all(data.cards.map(async c=>{const v=await staticJSON('notes/'+encodeURIComponent(c.id)+'.json',null);if(v&&Array.isArray(v.blocks))notesObj[c.id]=v.blocks;}));
  return {data,settings,allNotes:{notes:notesObj},figData:{items:{}},axisData};
+}
+function initFsSave(){
+ const btn=$('#fs-connect'),status=$('#fs-status');
+ btn.hidden=false;
+ function refresh(connected){
+  btn.textContent=connected?'Folder connected':'Connect folder to save';
+  btn.disabled=connected;
+  status.hidden=!connected;
+  status.textContent=connected?'Saving to disk':'';
+ }
+ FS.getDir(false).then(h=>refresh(!!h));
+ btn.addEventListener('click',async()=>{
+  const ok=await FS.connect();
+  refresh(ok);
+  toast(ok?'Connected — edits now save to this folder':'Could not connect the folder');
+ });
 }
 function lockEditing(){
  const lock=()=>{

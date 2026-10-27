@@ -1,0 +1,11 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "calm-ai-theme",
+      "runtimeExecutable": "python3",
+      "runtimeArgs": ["/Users/ziruw/Documents/GitHub/calm-ai-theme/server.py", "5500"],
+      "port": 5500
+    }
+  ]
+}

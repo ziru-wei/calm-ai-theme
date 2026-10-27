@@ -1,0 +1,19 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><title>Calm AI Theme</title></head>
+<body>
+<script>
+  // GitHub Pages serves this file for any unmatched path. Used as a trick so that
+  // appending /2001 to a real page's URL (e.g. /calm-ai-theme/2001 or
+  // /calm-ai-theme/related-works/2001) unlocks editing on the public site: strip the
+  // /2001 segment and redirect to the real page with #2001, which the page reads once
+  // to unlock editing (see the unlock script near the top of index.html and
+  // related-works/index.html).
+  var p = location.pathname.replace(/\/2001\/?$/, '/');
+  if (p === location.pathname) {
+    // not a /2001 request, just a genuine unknown path; send home
+    p = '/';
+  }
+  location.replace(p + location.search + '#2001');
+</script>
+<p>Redirecting…</p>
+</body></html>

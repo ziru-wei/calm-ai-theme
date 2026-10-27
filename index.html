@@ -336,10 +336,38 @@
   .nar svg text { font-family: Arial, Helvetica, sans-serif; }
   .nar .todo li { list-style: none; margin-left: -22px; }
   .nar .todo li::before { content: "\2610"; margin-right: 8px; color: var(--muted); }
+
+  /* Narrative: right-side table of contents, built from the markdown's h2 headings */
+  .nar-toc { position: fixed; right: max(18px, calc(50vw - 580px)); top: 50%; transform: translateY(-50%); width: 180px; max-height: 70vh; overflow-y: auto; opacity: 0; pointer-events: none; transition: opacity .2s; z-index: 10; }
+  .nar-toc.show { opacity: 1; pointer-events: auto; }
+  .nar-toc ul { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 7px; }
+  .nar-toc a { display: block; font-size: 12px; line-height: 1.4; color: var(--muted); text-decoration: none; border-left: 2px solid var(--line); padding: 1px 0 1px 10px; }
+  .nar-toc a:hover { color: var(--fg); }
+  .nar-toc li.active a { color: var(--fg); font-weight: 650; border-left-color: var(--fg); }
+  @media (max-width: 1240px) { .nar-toc { display: none; } }
+  body.editing #nar-content { outline: 1px dashed var(--muted); outline-offset: 6px; cursor: text; }
+  #nar-content .slot:empty::before { content: "(shown here when viewing the Narrative)"; color: var(--muted); font-size: 12px; font-style: italic; }
+  body.editing #nar-content .slot:empty::before { content: ""; }
 </style>
 
 <div class="edit-bar"><span id="sv" class="sv"></span><button type="button" class="rst" id="rst">Reset</button><a class="rel-link" href="related-works/">Related works →</a><button type="button" id="edt" aria-pressed="false">Edit</button></div>
-<script>if(!/^(localhost|127\.0\.0\.1|\[::1\])$/.test(location.hostname)&&location.protocol!=="file:")document.documentElement.classList.add("public");</script>
+<script>
+(function () {
+  var isLocal = /^(localhost|127\.0\.0\.1|\[::1\])$/.test(location.hostname) || location.protocol === "file:";
+  var unlocked = isLocal;
+  if (!unlocked) {
+    if (location.hash === "#2001") {
+      try { sessionStorage.setItem("calm-edit-unlock", "1"); } catch (e) {}
+      history.replaceState(null, "", location.pathname + location.search);
+      unlocked = true;
+    } else {
+      try { unlocked = sessionStorage.getItem("calm-edit-unlock") === "1"; } catch (e) {}
+    }
+  }
+  window.CALM_EDIT_UNLOCKED = unlocked;
+  if (!unlocked) document.documentElement.classList.add("public");
+})();
+</script>
 <div class="wrap" id="wrap">
 <div id="v-int">
   <div class="story">
@@ -697,91 +725,8 @@
 </div>
 
 <div id="v-nar" class="nar" hidden>
-<h1 data-eid="n0">Calm AI: Vision Writeup</h1>
-<p class="by" data-eid="n1">Ziru Wei</p>
-
-<h2 data-eid="n2">Motivation: tools that cut the loop</h2>
-<p data-eid="n3">People do skilled physical work through a loop: they touch the material, sense how it responds, and adjust. A knife in the hand is not only a means to cut, it is how a cook feels the food. We argue that two kinds of tools break this loop, and that a third kind is possible.</p>
-<p data-eid="n4">The first kind is the clumsy tool. It is heavy and dull, and it cuts the loop from the tool side: the person can barely reach the goal, and the effort of operating the tool pushes the material out of attention. Both ability and engagement stay low.</p>
-<p data-eid="n5">The second kind is current AI. It raises what a person can reach, but it does so by competing for attention or taking over the task. The person is pulled out of the material and into a conversation with the system, so engagement drops even as ability rises. The loop is cut from the AI side.</p>
-
-<h2 data-eid="n6">Framing: ability and engagement</h2>
-<p data-eid="n7">We place any tool on a plane with two axes. Ability is how much a person can reach with the tool. Engagement is how much the person stays in touch with the material. Four cases fall out, and only one is high on both.</p>
-<figure class="sq"><svg viewBox="0 0 500 500" role="img" aria-label="Chart with ability on the horizontal axis and engagement on the vertical axis, both centred. Clumsy tool is low on both. No Tech is low ability and high engagement. Current AI is high ability and low engagement. Calm AI is high on both.">
-        <rect x="0" y="250" width="250" height="250" fill="var(--c1)" fill-opacity=".1"/>
-        <rect x="0" y="0" width="250" height="250" fill="var(--c2)" fill-opacity=".1"/>
-        <rect x="250" y="250" width="250" height="250" fill="var(--c3)" fill-opacity=".1"/>
-        <rect x="250" y="0" width="250" height="250" fill="var(--c4)" fill-opacity=".1"/>
-
-        <line x1="0" y1="250" x2="488" y2="250" stroke="var(--fg)" stroke-width="2"/>
-        <polygon points="500,250 486,243 486,257" fill="var(--fg)"/>
-        <line x1="250" y1="500" x2="250" y2="12" stroke="var(--fg)" stroke-width="2"/>
-        <polygon points="250,0 243,14 257,14" fill="var(--fg)"/>
-
-        <text class="ax" x="486" y="232" text-anchor="end">Ability</text>
-        <text class="end" x="8" y="270">low</text>
-        <text class="end" x="486" y="270" text-anchor="end">high</text>
-        <text class="ax" x="262" y="22">Engagement</text>
-        <text class="end" x="262" y="40">high</text>
-        <text class="end" x="262" y="492">low</text>
-
-        <g>
-          <circle cx="125" cy="322" r="17" fill="var(--c1)"/>
-          <text x="125" y="328" text-anchor="middle" style="fill:var(--on);font-size:16px;font-weight:700">1</text>
-          <text class="nm" x="125" y="372" text-anchor="middle">Clumsy tool</text>
-          <text class="sb" x="125" y="394" text-anchor="middle">the tool blocks the activity</text>
-        </g>
-        <g>
-          <circle cx="125" cy="178" r="17" fill="var(--c2)"/>
-          <text x="125" y="184" text-anchor="middle" style="fill:var(--on);font-size:16px;font-weight:700">2</text>
-          <text class="nm" x="125" y="128" text-anchor="middle">No Tech</text>
-          <text class="sb" x="125" y="150" text-anchor="middle">engaged, short reach</text>
-        </g>
-        <g>
-          <circle cx="375" cy="322" r="17" fill="var(--c3)"/>
-          <text x="375" y="328" text-anchor="middle" style="fill:var(--on);font-size:16px;font-weight:700">3</text>
-          <text class="nm" x="375" y="372" text-anchor="middle">Current AI</text>
-          <text class="sb" x="375" y="394" text-anchor="middle">raises reach, cuts the feed</text>
-        </g>
-        <g>
-          <circle cx="375" cy="178" r="17" fill="var(--c4)"/>
-          <text x="375" y="184" text-anchor="middle" style="fill:var(--on);font-size:16px;font-weight:700">4</text>
-          <text class="nm" x="375" y="128" text-anchor="middle">Calm AI</text>
-          <text class="sb" x="375" y="150" text-anchor="middle">attention moves freely</text>
-        </g>
-      </svg><figcaption data-eid="n8">Figure 1. Clumsy tool and Current AI each cut the loop, from opposite sides. No Tech keeps the loop but has a short reach. Calm AI is the case where attention moves freely and reach is high.</figcaption></figure>
-<p data-eid="n9">The move we study is from Current AI to Calm AI: keep the gain in ability, and give back the engagement.</p>
-<p data-eid="n10">In the kitchen, the four cases look like this.</p>
-<figure><svg viewBox="0 0 760 480" role="img" aria-label="The same cook and fish with each tool: clumsy tool, no tech, two ways current AI fails, and calm AI" font-size="13" font-family="Arial, Helvetica, sans-serif"><text x="24" y="28" font-size="15" font-weight="600" style="fill:var(--fg)">The same cook and fish with each tool</text><g><rect x="24" y="49" width="168" height="4" fill="var(--c1)"></rect><g><circle cx="33" cy="66" r="9" fill="var(--c1)"></circle><text x="33" y="70" text-anchor="middle" font-size="11" font-weight="700" style="fill:var(--on)">1</text></g><text x="50" y="70" font-size="12.5" font-weight="600" style="fill:var(--c1)">Clumsy tool</text><text x="50" y="87" font-size="11.5" style="fill:var(--c1)">&lt;heavy, dull knife&gt;</text><g transform="translate(24 98) scale(0.4)"><g opacity="0.45"><polygon points="130,28 404,28 354,138 80,138" fill="none" stroke="var(--line)" stroke-width="3"></polygon></g><polygon points="110,198 384,198 334,308 60,308" fill="none" stroke="var(--line)" stroke-width="3"></polygon><line x1="10" y1="166" x2="410" y2="166" stroke="var(--muted)" stroke-width="3" stroke-dasharray="6 5"></line><g fill="var(--soft)"><rect x="41" y="150" width="10" height="26"></rect><path d="M12 252 Q12 172 46 172 Q80 172 80 252 Z"></path><circle cx="46" cy="132" r="20"></circle></g><polygon points="205,222 352,222 324.7,282 177.7,282" fill="var(--card)" stroke="var(--line)" stroke-width="3"></polygon><g transform="translate(0,256) skewX(-24.44) translate(0,-256)"><path d="M262 256 Q282 241 308 247 Q322 251 330 242 L330 270 Q322 261 308 265 Q282 271 262 256 Z" fill="var(--soft)" stroke="var(--muted)" stroke-width="3" stroke-linejoin="round"></path><circle cx="274" cy="254" r="2" fill="var(--fg)"></circle></g><g><path d="M62 214 Q84 256 150 255" fill="none" stroke="var(--soft)" stroke-width="14" stroke-linecap="round"></path><ellipse cx="152" cy="255" rx="13" ry="10" fill="var(--soft)"></ellipse></g><ellipse cx="238" cy="257" rx="100" ry="30" fill="var(--cy)" fill-opacity="0.14" stroke="var(--cy)" stroke-width="5"></ellipse><g transform="translate(160,255) scale(1.12,1.9)" fill="var(--muted)" fill-opacity="1"><rect x="0" y="-4" width="24" height="8" rx="4"></rect><path d="M24 -5 L128 -2 Q138 3 124 6 L24 6 Z"></path></g><g fill="none" stroke="var(--cy)" stroke-width="5" stroke-linecap="round" stroke-dasharray="0.1 9" stroke-opacity="1"><path d="M180 245 Q221 214 258 245"></path><path d="M258 265 Q221 296 180 265"></path></g><g stroke="var(--fg)" stroke-width="6" stroke-linecap="round"><line x1="210" y1="219" x2="232" y2="241"></line><line x1="232" y1="219" x2="210" y2="241"></line></g></g></g><g><rect x="24" y="267" width="168" height="4" fill="var(--c2)"></rect><g><circle cx="33" cy="284" r="9" fill="var(--c2)"></circle><text x="33" y="288" text-anchor="middle" font-size="11" font-weight="700" style="fill:var(--on)">2</text></g><text x="50" y="288" font-size="12.5" font-weight="600" style="fill:var(--c2)">No Tech</text><text x="50" y="305" font-size="11.5" style="fill:var(--c2)">&lt;no knife&gt;</text><g transform="translate(24 316) scale(0.4)"><polygon points="130,28 404,28 354,138 80,138" fill="none" stroke="var(--line)" stroke-width="3"></polygon><polygon points="130,28 404,28 354,138 80,138" fill="var(--cy)" fill-opacity="0.14" stroke="var(--cy)" stroke-width="5" stroke-linejoin="round"></polygon><g transform="translate(246,76)"><ellipse rx="24" ry="17" fill="var(--card)" stroke="var(--muted)" stroke-width="3"></ellipse><g fill="none" stroke="var(--muted)" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M0 -9 Q8 1 0 8 Q-8 1 0 -9 Z"></path></g></g><polygon points="110,198 384,198 334,308 60,308" fill="none" stroke="var(--line)" stroke-width="3"></polygon><polygon points="110,198 384,198 334,308 60,308" fill="var(--cy)" fill-opacity="0.14" stroke="var(--cy)" stroke-width="5" stroke-linejoin="round"></polygon><line x1="10" y1="166" x2="410" y2="166" stroke="var(--muted)" stroke-width="3" stroke-dasharray="6 5"></line><g fill="var(--soft)"><rect x="41" y="150" width="10" height="26"></rect><path d="M12 252 Q12 172 46 172 Q80 172 80 252 Z"></path><circle cx="46" cy="132" r="20"></circle></g><polygon points="205,222 352,222 324.7,282 177.7,282" fill="var(--card)" stroke="var(--line)" stroke-width="3"></polygon><g transform="translate(0,256) skewX(-24.44) translate(0,-256)"><path d="M262 256 Q282 241 308 247 Q322 251 330 242 L330 270 Q322 261 308 265 Q282 271 262 256 Z" fill="var(--soft)" stroke="var(--muted)" stroke-width="3" stroke-linejoin="round"></path><circle cx="274" cy="254" r="2" fill="var(--fg)"></circle></g><g><path d="M62 214 Q92 262 244 256" fill="none" stroke="var(--soft)" stroke-width="14" stroke-linecap="round"></path><ellipse cx="248" cy="255" rx="13" ry="10" fill="var(--soft)"></ellipse></g><g fill="none" stroke="var(--cy)" stroke-width="4"><circle cx="246" cy="196" r="5" stroke-opacity="1"></circle><circle cx="246" cy="172" r="4.5" stroke-opacity="0.7"></circle><circle cx="246" cy="148" r="4" stroke-opacity="0.45"></circle><circle cx="246" cy="124" r="3.5" stroke-opacity="0.25"></circle></g><g fill="none" stroke="var(--cy)" stroke-width="5" stroke-linecap="round" stroke-dasharray="0.1 9"><path d="M238 243 Q262 216 290 243"></path><path d="M290 269 Q262 296 238 269"></path></g><g stroke="var(--cy)" stroke-width="5" fill="var(--cy)"><line x1="372" y1="152" x2="372" y2="184"></line><polygon points="372,141 364,155 380,155" stroke="none"></polygon><polygon points="372,195 364,181 380,181" stroke="none"></polygon></g></g><text x="134" y="349" font-size="10.5" font-weight="600" style="fill:var(--muted)">flavor</text></g><g><rect x="212" y="49" width="168" height="4" fill="var(--c3)"></rect><g><circle cx="221" cy="66" r="9" fill="var(--c3)"></circle><text x="221" y="70" text-anchor="middle" font-size="11" font-weight="700" style="fill:var(--on)">3</text></g><text x="238" y="70" font-size="12" font-weight="600" style="fill:var(--c3)">Current AI: competition</text><text x="238" y="87" font-size="11.5" style="fill:var(--c3)">&lt;speaking knife&gt;</text><g transform="translate(212 98) scale(0.4)"><g opacity="0.6"><polygon points="130,28 404,28 354,138 80,138" fill="none" stroke="var(--line)" stroke-width="3"></polygon><ellipse cx="246" cy="84" rx="24" ry="17" fill="var(--card)" stroke="var(--muted)" stroke-width="3"></ellipse><text x="246" y="94" text-anchor="middle" font-size="26" font-weight="700" style="fill:var(--fg)">?</text></g><polygon points="110,198 384,198 334,308 60,308" fill="none" stroke="var(--line)" stroke-width="3"></polygon><line x1="10" y1="166" x2="410" y2="166" stroke="var(--muted)" stroke-width="3" stroke-dasharray="6 5"></line><g fill="var(--soft)"><rect x="41" y="150" width="10" height="26"></rect><path d="M12 252 Q12 172 46 172 Q80 172 80 252 Z"></path><circle cx="46" cy="132" r="20"></circle></g><polygon points="205,222 352,222 324.7,282 177.7,282" fill="var(--card)" stroke="var(--line)" stroke-width="3"></polygon><g transform="translate(0,256) skewX(-24.44) translate(0,-256)"><path d="M262 256 Q282 241 308 247 Q322 251 330 242 L330 270 Q322 261 308 265 Q282 271 262 256 Z" fill="var(--soft)" stroke="var(--muted)" stroke-width="3" stroke-linejoin="round"></path><circle cx="274" cy="254" r="2" fill="var(--fg)"></circle></g><g><path d="M62 214 Q84 256 150 255" fill="none" stroke="var(--soft)" stroke-width="14" stroke-linecap="round"></path><ellipse cx="152" cy="255" rx="13" ry="10" fill="var(--soft)"></ellipse></g><g fill="none" stroke="var(--cy)" stroke-width="5" stroke-linecap="round" stroke-dasharray="0.1 9" stroke-opacity="0.22"><path d="M180 245 Q221 214 258 245"></path><path d="M258 265 Q221 296 180 265"></path></g><ellipse cx="229" cy="255" rx="82" ry="24" fill="var(--cy)" fill-opacity="0.14" stroke="var(--cy)" stroke-width="5"></ellipse><g transform="translate(160,255) scale(1,1)" fill="var(--c3)" fill-opacity="1"><rect x="0" y="-4" width="24" height="8" rx="4"></rect><path d="M24 -5 L128 -2 Q138 3 124 6 L24 6 Z"></path></g><g><rect x="168" y="188" width="96" height="32" rx="8" fill="var(--card)" stroke="var(--c3)" stroke-width="5"></rect><polygon points="192,219 212,219 196,240" fill="var(--card)" stroke="var(--c3)" stroke-width="5" stroke-linejoin="round"></polygon><rect x="191" y="217" width="22" height="6" fill="var(--card)"></rect><g stroke="var(--c3)" stroke-width="4" stroke-linecap="round"><line x1="180" y1="199" x2="252" y2="199"></line><line x1="180" y1="207" x2="240" y2="207"></line></g></g></g></g><g><rect x="212" y="267" width="168" height="4" fill="var(--c3)"></rect><g><circle cx="221" cy="284" r="9" fill="var(--c3)"></circle><text x="221" y="288" text-anchor="middle" font-size="11" font-weight="700" style="fill:var(--on)">3</text></g><text x="238" y="288" font-size="12" font-weight="600" style="fill:var(--c3)">Current AI: takeover</text><text x="238" y="305" font-size="11.5" style="fill:var(--c3)">&lt;auto knife&gt;</text><g transform="translate(212 316) scale(0.4)"><polygon points="130,28 404,28 354,138 80,138" fill="none" stroke="var(--line)" stroke-width="3" stroke-dasharray="8 6"></polygon><polygon points="130,28 404,28 354,138 80,138" fill="var(--cy)" fill-opacity="0.14" stroke="var(--cy)" stroke-width="5" stroke-linejoin="round" stroke-dasharray="12 8"></polygon><ellipse cx="246" cy="84" rx="24" ry="17" fill="var(--card)" stroke="var(--muted)" stroke-width="3"></ellipse><text x="246" y="94" text-anchor="middle" font-size="26" font-weight="700" style="fill:var(--fg)">?</text><polygon points="110,198 384,198 334,308 60,308" fill="none" stroke="var(--line)" stroke-width="3"></polygon><line x1="10" y1="166" x2="410" y2="166" stroke="var(--muted)" stroke-width="3" stroke-dasharray="6 5"></line><g fill="var(--soft)"><rect x="41" y="150" width="10" height="26"></rect><path d="M12 252 Q12 172 46 172 Q80 172 80 252 Z"></path><circle cx="46" cy="132" r="20"></circle></g><polygon points="205,222 352,222 324.7,282 177.7,282" fill="var(--card)" stroke="var(--line)" stroke-width="3"></polygon><g transform="translate(0,256) skewX(-24.44) translate(0,-256)"><path d="M262 256 Q282 241 308 247 Q322 251 330 242 L330 270 Q322 261 308 265 Q282 271 262 256 Z" fill="var(--soft)" stroke="var(--muted)" stroke-width="3" stroke-linejoin="round"></path><circle cx="274" cy="254" r="2" fill="var(--fg)"></circle></g><g><path d="M62 214 Q84 256 150 255" fill="none" stroke="var(--soft)" stroke-width="14" stroke-linecap="round"></path><ellipse cx="152" cy="255" rx="13" ry="10" fill="var(--soft)"></ellipse></g><ellipse cx="30" cy="30" rx="26" ry="15" fill="var(--cy)" fill-opacity="0.14" stroke="var(--cy)" stroke-width="5" stroke-dasharray="8 6"></ellipse><g fill="none" stroke="var(--cy)" stroke-width="5" stroke-linecap="round" stroke-dasharray="0.1 9" stroke-opacity="1"><path d="M180 245 Q221 214 258 245"></path><path d="M258 265 Q221 296 180 265"></path></g><g stroke="var(--fg)" stroke-width="6" stroke-linecap="round"><line x1="210" y1="219" x2="232" y2="241"></line><line x1="232" y1="219" x2="210" y2="241"></line></g><g transform="translate(200,255) scale(0.78,1)" fill="var(--c3)" fill-opacity="1"><rect x="0" y="-4" width="24" height="8" rx="4"></rect><path d="M24 -5 L128 -2 Q138 3 124 6 L24 6 Z"></path></g></g><text x="216" y="347" font-size="10.5" font-weight="600" style="fill:var(--cy)">drifting</text></g><g><rect x="400" y="49" width="336" height="4" fill="var(--c4)"></rect><g><circle cx="409" cy="66" r="9" fill="var(--c4)"></circle><text x="409" y="70" text-anchor="middle" font-size="11" font-weight="700" style="fill:var(--on)">4</text></g><text x="426" y="70" font-size="12.5" font-weight="600" style="fill:var(--c4)">Calm AI</text><text x="426" y="87" font-size="11.5" style="fill:var(--c4)"><tspan>&lt;lightweight sharp knife that hides</tspan><tspan x="426" dy="15">in the background&gt;</tspan></text><g transform="translate(400 112) scale(0.8)"><polygon points="130,28 404,28 354,138 80,138" fill="none" stroke="var(--line)" stroke-width="3"></polygon><polygon points="130,28 404,28 354,138 80,138" fill="var(--cy)" fill-opacity="0.14" stroke="var(--cy)" stroke-width="5" stroke-linejoin="round"></polygon><g transform="translate(150,70)"><ellipse rx="24" ry="17" fill="var(--card)" stroke="var(--muted)" stroke-width="3"></ellipse><g fill="none" stroke="var(--muted)" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><g><circle cx="-4" cy="0" r="7"></circle><circle cx="4" cy="0" r="7"></circle></g></g></g><g transform="translate(215,70)"><ellipse rx="24" ry="17" fill="var(--card)" stroke="var(--muted)" stroke-width="3"></ellipse><g fill="none" stroke="var(--muted)" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M0 -9 Q8 1 0 8 Q-8 1 0 -9 Z"></path></g></g><g transform="translate(280,70)"><ellipse rx="24" ry="17" fill="var(--card)" stroke="var(--muted)" stroke-width="3"></ellipse><g fill="none" stroke="var(--muted)" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M-10 -4 q3.3 -4 6.7 0 t6.7 0 t6.7 0 M-10 4 q3.3 -4 6.7 0 t6.7 0 t6.7 0"></path></g></g><g transform="translate(345,70)"><ellipse rx="24" ry="17" fill="var(--card)" stroke="var(--muted)" stroke-width="3"></ellipse><g fill="none" stroke="var(--muted)" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M0 -9 L2.6 -3 L9 -2.8 L4 1.6 L5.6 8 L0 4.6 L-5.6 8 L-4 1.6 L-9 -2.8 L-2.6 -3 Z"></path></g></g><polygon points="110,198 384,198 334,308 60,308" fill="none" stroke="var(--line)" stroke-width="3"></polygon><polygon points="110,198 384,198 334,308 60,308" fill="var(--cy)" fill-opacity="0.14" stroke="var(--cy)" stroke-width="5" stroke-linejoin="round"></polygon><line x1="10" y1="166" x2="410" y2="166" stroke="var(--muted)" stroke-width="3" stroke-dasharray="6 5"></line><g fill="var(--soft)"><rect x="41" y="150" width="10" height="26"></rect><path d="M12 252 Q12 172 46 172 Q80 172 80 252 Z"></path><circle cx="46" cy="132" r="20"></circle></g><polygon points="205,222 352,222 324.7,282 177.7,282" fill="var(--card)" stroke="var(--line)" stroke-width="3"></polygon><g transform="translate(0,256) skewX(-24.44) translate(0,-256)"><path d="M262 256 Q282 241 308 247 Q322 251 330 242 L330 270 Q322 261 308 265 Q282 271 262 256 Z" fill="var(--soft)" stroke="var(--muted)" stroke-width="3" stroke-linejoin="round"></path><circle cx="274" cy="254" r="2" fill="var(--fg)"></circle></g><g><path d="M62 214 Q84 256 150 255" fill="none" stroke="var(--soft)" stroke-width="14" stroke-linecap="round"></path><ellipse cx="152" cy="255" rx="13" ry="10" fill="var(--soft)"></ellipse></g><g transform="translate(160,255) scale(1,0.8)" fill="var(--fg)" fill-opacity="0.25"><rect x="0" y="-4" width="24" height="8" rx="4"></rect><path d="M24 -5 L128 -2 Q138 3 124 6 L24 6 Z"></path></g><g fill="none" stroke="var(--cy)" stroke-width="4"><circle cx="150" cy="196" r="5" stroke-opacity="1"></circle><circle cx="150" cy="172" r="4.5" stroke-opacity="0.7"></circle><circle cx="150" cy="148" r="4" stroke-opacity="0.45"></circle><circle cx="150" cy="124" r="3.5" stroke-opacity="0.25"></circle></g><g fill="none" stroke="var(--cy)" stroke-width="4"><circle cx="215" cy="196" r="5" stroke-opacity="1"></circle><circle cx="215" cy="172" r="4.5" stroke-opacity="0.7"></circle><circle cx="215" cy="148" r="4" stroke-opacity="0.45"></circle><circle cx="215" cy="124" r="3.5" stroke-opacity="0.25"></circle></g><g fill="none" stroke="var(--cy)" stroke-width="5" stroke-linecap="round" stroke-dasharray="0.1 9"><path d="M180 245 Q221 214 258 245"></path><path d="M258 265 Q221 296 180 265"></path></g><g stroke="var(--cy)" stroke-width="5" fill="var(--cy)"><line x1="100" y1="152" x2="100" y2="184"></line><polygon points="100,141 92,155 108,155" stroke="none"></polygon><polygon points="100,195 92,181 108,181" stroke="none"></polygon></g></g><text x="520" y="195" text-anchor="middle" font-size="11" font-weight="600" style="fill:var(--muted)">pairing</text><text x="572" y="195" text-anchor="middle" font-size="11" font-weight="600" style="fill:var(--muted)">flavor</text><text x="624" y="195" text-anchor="middle" font-size="11" font-weight="600" style="fill:var(--muted)">texture</text><text x="676" y="195" text-anchor="middle" font-size="11" font-weight="600" style="fill:var(--muted)">style</text><text x="728" y="239" text-anchor="end" font-size="10.5" font-weight="700" style="fill:var(--muted)">HIGH-LEVEL · COOKING</text><text x="728" y="260" text-anchor="end" font-size="10.5" font-weight="700" style="fill:var(--muted)">LOW-LEVEL · CUTTING</text></g><g><rect x="456" y="400" width="24" height="12" rx="3" fill="var(--cy)" fill-opacity="0.2" stroke="var(--cy)" stroke-width="2"></rect><text x="488" y="410" font-size="11.5" style="fill:var(--muted)">attention, free to move between levels</text><line x1="456" y1="428" x2="480" y2="428" stroke="var(--cy)" stroke-width="3.6" stroke-linecap="round" stroke-dasharray="0.1 6"></line><text x="488" y="432" font-size="11.5" style="fill:var(--muted)">engagement loop</text><circle cx="468" cy="448" r="4" fill="none" stroke="var(--cy)" stroke-width="2"></circle><text x="488" y="452" font-size="11.5" style="fill:var(--muted)">engagement rising to the dish</text></g></svg><figcaption data-eid="n11">Figure 2. Each case keeps the color it has in Figure 1. Blue marks where attention sits, the dotted loop is the cook's engagement with the fish, and the rising bubbles are engagement reaching up to the dish. Current AI fails in two ways, competition and takeover.</figcaption></figure>
-
-<h2 data-eid="n12">Calm AI: raising ability while keeping the loop</h2>
-<p data-eid="n13">Calm AI is AI that raises what a person can do while attention stays free to move. The person stays in touch with the material through the same multisensory, analog loop, and the AI can make that loop richer instead of replacing it.</p>
-<p data-eid="n14">Two principles follow. The AI does not disturb: it never competes with the material for attention. It does not take over: the person remains the one who acts. These are constraints on any design, not subthemes of their own.</p>
-<p data-eid="n15">We use engagement in a specific sense: staying in touch with the material. It is not time on task or enjoyment. A system can be used for hours and still score low, if the person only talks to it.</p>
-
-<h2 data-eid="n16">Ways: what moves a system up and right</h2>
-<p data-eid="n17">Ways say how the AI is built into the activity. The directions that follow say where on the plane a project lands. All three ways blend AI into the environment and the task, and each improves a different thing: the tool, the spatial interface, or the proactive agent.</p>
-<div class="slot" id="slot-ways"></div>
-<p data-eid="n19">Proactivity is a way, not a direction. It is one mechanism, next to the environment, for reaching the same quadrant.</p>
-
-<h2 data-eid="n20">Three directions</h2>
-<p data-eid="n21">Each direction leaves a baseline and ends in the Calm AI quadrant, but they differ in what the AI adds and where on the plane they land. All three work by blending AI into the environment and the task.</p>
-<div class="slot dp" id="slot-dirs"></div>
-<p data-eid="n22">Reading the charts: in direction 1 the arrows start from Current AI and rise, so reach is kept and engagement ends high but not far to the right. In direction 2 they can start from any of the three baselines, and ability means awareness ability. In direction 3 they end far to the right with engagement kept moderately high, and ability means action ability.</p>
-
-<h2 data-eid="n26">Concrete projects on the triangle</h2>
-<p data-eid="n27">A list of three directions cannot hold a project that belongs to two of them. We therefore arrange the directions as the corners of a triangle. A project is a shape with a start and an end, each with its own size, so it can sit on one corner, run along an edge, or cross the inside.</p>
-<div class="slot" id="slot-proj"></div>
-<p data-eid="n29">Projects planned next are placed here the same way, and the flagship should sit where it is more relevant to the theme than the others: the junction of directions 1 and 3 is still empty.</p>
-
-<h2 data-eid="n30">Open questions</h2>
-<ul class="todo">
-<li data-eid="n31">Which project is the flagship, and where does it sit on the triangle? It should be more relevant to the theme than the other projects.</li>
-<li data-eid="n32">How do we measure engagement as staying in touch with the material, rather than time on task or performance?</li>
-<li data-eid="n33">Should the three direction names share a prefix, or stay as they are?</li>
-<li data-eid="n34">Which venue fits this framing as a vision paper, CHI or UIST?</li>
-</ul>
-</div>
+<nav id="nar-toc" class="nar-toc" aria-label="Narrative contents"></nav>
+<div id="nar-content" class="markdown-content"></div>
 </div>
 <div class="seg" role="group" aria-label="View"><button type="button" id="seg-int" aria-pressed="true">Interactive</button><button type="button" id="seg-nar" aria-pressed="false">Narrative</button></div>
 
@@ -1124,6 +1069,7 @@
     texts.forEach(function (t) { if (editing) t.setAttribute('contenteditable', 'true'); else t.removeAttribute('contenteditable'); });
     renderProj();
     if (!editing) { clearTimeout(timer); timer = null; persist(true); }
+    document.dispatchEvent(new CustomEvent('calm-edit-toggle', { detail: { editing: editing } }));
   });
   texts.forEach(function (t) { t.addEventListener('input', save); });
   document.getElementById('rst').addEventListener('click', function () {
@@ -1135,36 +1081,208 @@
 (function () {
   var vi = document.getElementById('v-int'), vn = document.getElementById('v-nar');
   var bi = document.getElementById('seg-int'), bn = document.getElementById('seg-nar');
+  var narContent = document.getElementById('nar-content');
+  var tocNav = document.getElementById('nar-toc');
   // The Ways, Directions and Projects blocks are the same live components, moved between the two views.
-  var parts = [
-    { el: vi.querySelector('section.more'), slot: document.getElementById('slot-ways') },
-    { el: vi.querySelector('.dpl'), slot: document.getElementById('slot-dirs') },
-    { el: vi.querySelector('.dpr'), slot: document.getElementById('slot-proj') }
-  ].filter(function (p) { return p.el && p.slot; });
-  parts.forEach(function (p) { p.home = document.createComment('home'); p.el.parentNode.insertBefore(p.home, p.el); });
+  // They only exist as DOM nodes inside #nar-content once narrative.md has been fetched and rendered, so
+  // wiring them up (and any initial "show narrative" request) waits for that.
+  var parts = null, narReady = false, pendingView = null;
+
+  function wireParts() {
+    parts = [
+      { el: vi.querySelector('section.more'), slot: document.getElementById('slot-ways') },
+      { el: vi.querySelector('.dpl'), slot: document.getElementById('slot-dirs') },
+      { el: vi.querySelector('.dpr'), slot: document.getElementById('slot-proj') }
+    ].filter(function (p) { return p.el && p.slot; });
+    parts.forEach(function (p) { p.home = document.createComment('home'); p.el.parentNode.insertBefore(p.home, p.el); });
+  }
   function place(nar) {
     parts.forEach(function (p) {
       if (nar) p.slot.appendChild(p.el);
       else p.home.parentNode.insertBefore(p.el, p.home.nextSibling);
     });
   }
+  function buildToc() {
+    var heads = Array.prototype.slice.call(narContent.querySelectorAll('h2'));
+    tocNav.innerHTML = '';
+    if (!heads.length) return;
+    var ul = document.createElement('ul');
+    var items = [];
+    heads.forEach(function (h, i) {
+      if (!h.id) h.id = 'nh' + i;
+      var li = document.createElement('li');
+      var a = document.createElement('a');
+      a.href = '#' + h.id;
+      a.textContent = h.textContent;
+      a.addEventListener('click', function (e) {
+        e.preventDefault();
+        h.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      });
+      li.appendChild(a);
+      ul.appendChild(li);
+      items.push({ li: li, h: h });
+    });
+    tocNav.appendChild(ul);
+    function onScroll() {
+      if (vn.hidden) return;
+      var y = window.scrollY + 140;
+      var active = items[0];
+      items.forEach(function (it) { if (it.h.offsetTop <= y) active = it; });
+      items.forEach(function (it) { it.li.classList.toggle('active', it === active); });
+    }
+    window.addEventListener('scroll', onScroll, { passive: true });
+    window.addEventListener('resize', onScroll);
+    onScroll();
+  }
+
   function show(v) {
     var nar = v === 'narrative';
-    place(nar);
+    if (nar && !narReady) { pendingView = v; return; }
+    if (parts) place(nar);
     vi.hidden = nar; vn.hidden = !nar;
     bi.setAttribute('aria-pressed', nar ? 'false' : 'true');
     bn.setAttribute('aria-pressed', nar ? 'true' : 'false');
+    tocNav.classList.toggle('show', nar);
     try { sessionStorage.setItem('calm-view', v); } catch (e) {}
     if (location.hash !== (nar ? '#narrative' : '')) history.replaceState(null, '', nar ? '#narrative' : location.pathname + location.search);
     window.scrollTo(0, 0);
   }
   bi.addEventListener('click', function () { show('interactive'); });
   bn.addEventListener('click', function () { show('narrative'); });
-  var v = location.hash === '#narrative' ? 'narrative' : null;
-  if (!v) { try { v = sessionStorage.getItem('calm-view'); } catch (e) {} }
-  if (v === 'narrative') show('narrative');
+
+  // Called once narrative.md has been fetched and parsed to HTML (see the narrative module below).
+  window.CalmNarrative = window.CalmNarrative || {};
+  window.CalmNarrative.mount = function (html) {
+    narContent.innerHTML = html;
+    wireParts();
+    buildToc();
+    narReady = true;
+    var v = pendingView;
+    if (!v) v = location.hash === '#narrative' ? 'narrative' : null;
+    if (!v) { try { v = sessionStorage.getItem('calm-view'); } catch (e) {} }
+    show(v === 'narrative' ? 'narrative' : 'interactive');
+  };
 })();
 
+</script>
+
+<script src="https://cdn.jsdelivr.net/npm/marked@12.0.2/lib/marked.umd.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/turndown@7.2.0/dist/turndown.js"></script>
+<script>
+// Narrative view: narrative.md is the source of truth. It is fetched and rendered with
+// marked.js, and (when editing is unlocked) the rendered block can be edited in place and
+// turned back into Markdown with turndown.js. Saving tries, in order: the local server
+// (server.py's /api/narrative), a File System Access handle to narrative.md picked once via
+// the browser's native file picker, or, failing both, a download of the edited file plus a
+// note in the browser so edits are never silently lost.
+(function () {
+  var narContent = document.getElementById('nar-content');
+  var statusEl = document.getElementById('sv');
+  function status(msg) { if (statusEl) statusEl.textContent = msg; }
+
+  function idb(fn) {
+    return new Promise(function (res, rej) {
+      var rq = indexedDB.open('calm-ai-fs', 1);
+      rq.onupgradeneeded = function () { if (!rq.result.objectStoreNames.contains('h')) rq.result.createObjectStore('h'); };
+      rq.onerror = function () { rej(rq.error); };
+      rq.onsuccess = function () {
+        var tx = rq.result.transaction('h', 'readwrite'), r = fn(tx.objectStore('h'));
+        tx.oncomplete = function () { res(r.result); };
+        tx.onerror = function () { rej(tx.error); };
+      };
+    });
+  }
+  async function getHandle(gesture) {
+    try {
+      var h = await idb(function (st) { return st.get('narrative'); });
+      if (!h && gesture && window.showSaveFilePicker) {
+        h = await window.showSaveFilePicker({ suggestedName: 'narrative.md', types: [{ description: 'Markdown', accept: { 'text/markdown': ['.md'] } }] });
+        await idb(function (st) { return st.put(h, 'narrative'); });
+      }
+      if (!h) return null;
+      var p = await h.queryPermission({ mode: 'readwrite' });
+      if (p !== 'granted' && gesture) p = await h.requestPermission({ mode: 'readwrite' });
+      return p === 'granted' ? h : null;
+    } catch (e) { return null; }
+  }
+  function download(text) {
+    var blob = new Blob([text], { type: 'text/markdown' });
+    var a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = 'narrative.md';
+    document.body.appendChild(a); a.click(); a.remove();
+    setTimeout(function () { URL.revokeObjectURL(a.href); }, 2000);
+  }
+
+  var serverOK = false;
+  fetch('/api/narrative').then(function (r) { serverOK = r.ok && (r.headers.get('content-type') || '').indexOf('json') >= 0; }).catch(function () {});
+
+  var td = null;
+  function turndownService() {
+    if (td) return td;
+    td = new TurndownService({ headingStyle: 'atx', bulletListMarker: '-' });
+    td.keep(['figure', 'figcaption', 'svg']);
+    // Keep the byline and the open-questions list as raw HTML too, so their classes
+    // (and so their styling) survive a save round-trip.
+    td.addRule('calm-keep-classed', {
+      filter: function (node) { return !!(node.classList && (node.classList.contains('by') || node.classList.contains('todo'))); },
+      replacement: function (content, node) { return '\n\n' + node.outerHTML + '\n\n'; }
+    });
+    return td;
+  }
+  function toMarkdown() {
+    var clone = narContent.cloneNode(true);
+    // The Ways / Directions / Projects slots hold live components borrowed from the Interactive
+    // view while Narrative is open; save the empty placeholder, not whatever is parked inside it.
+    // Turndown drops empty elements before any rule runs, so swap each slot for a plain-text
+    // token first (which survives conversion) and restore the real placeholder markup after.
+    var placeholders = [];
+    Array.prototype.slice.call(clone.querySelectorAll('.slot')).forEach(function (s, i) {
+      var token = 'CALMSLOTPLACEHOLDER' + i + 'END';
+      placeholders.push({ token: token, cls: s.getAttribute('class'), id: s.getAttribute('id') });
+      var p = document.createElement('p');
+      p.textContent = token;
+      s.replaceWith(p);
+    });
+    var md = turndownService().turndown(clone);
+    placeholders.forEach(function (ph) {
+      md = md.split(ph.token).join('<div class="' + ph.cls + '" id="' + ph.id + '"></div>');
+    });
+    return md.replace(/\n{3,}/g, '\n\n').trim() + '\n';
+  }
+
+  function persistNarrative(gesture) {
+    var text = toMarkdown();
+    if (serverOK) {
+      fetch('/api/narrative', { method: 'POST', headers: { 'Content-Type': 'text/markdown' }, body: text })
+        .then(function (r) { status(r.ok ? 'Saved to narrative.md' : 'Save failed'); })
+        .catch(function () { status('Save failed'); });
+      return;
+    }
+    getHandle(gesture).then(function (h) {
+      if (h) {
+        h.createWritable().then(function (w) { return w.write(text).then(function () { return w.close(); }); })
+          .then(function () { status('Saved to narrative.md'); })
+          .catch(function () { status('Save failed'); });
+      } else if (gesture) {
+        download(text);
+        status('Downloaded narrative.md — replace the file in your checkout and commit it');
+      }
+    });
+  }
+
+  document.addEventListener('calm-edit-toggle', function (e) {
+    var editing = e.detail.editing;
+    narContent.setAttribute('contenteditable', editing ? 'true' : 'false');
+    if (!editing) persistNarrative(true);
+  });
+
+  fetch('narrative.md', { cache: 'no-store' }).then(function (r) { return r.text(); }).then(function (text) {
+    window.CalmNarrative.mount(marked.parse(text));
+  }).catch(function () {
+    window.CalmNarrative.mount('<p>Could not load narrative.md.</p>');
+  });
+})();
 </script>
 
 </body></html>

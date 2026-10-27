@@ -4,6 +4,7 @@ import http.server, json, os, socketserver, sys, threading, webbrowser
 
 ROOT = os.path.dirname(os.path.abspath(__file__))
 STATE = os.path.join(ROOT, "state.json")
+NARRATIVE = os.path.join(ROOT, "narrative.md")
 PORT = int(sys.argv[1]) if len(sys.argv) > 1 else 5500
 
 
@@ -27,24 +28,37 @@ class Handler(http.server.SimpleHTTPRequestHandler):
                     return self._json(200, json.load(f))
             except (FileNotFoundError, ValueError):
                 return self._json(200, {})
+        if self.path.split("?")[0] == "/api/narrative":
+            return self._json(200, {"ok": True})  # probe target; the page fetches narrative.md itself
         return super().do_GET()
 
     def do_POST(self):
-        if self.path.split("?")[0] != "/api/state":
-            return self._json(404, {"error": "not found"})
-        n = int(self.headers.get("Content-Length", 0))
-        try:
-            obj = json.loads(self.rfile.read(n) or b"{}")
-        except ValueError:
-            return self._json(400, {"error": "bad json"})
-        # never overwrite saved edits with an empty state unless Reset asked for it
-        if not obj.get("texts") and not obj.get("arrows") and "reset=1" not in self.path:
-            return self._json(200, {"ok": True, "skipped": "empty"})
-        tmp = STATE + ".tmp"
-        with open(tmp, "w", encoding="utf-8") as f:
-            json.dump(obj, f, ensure_ascii=False, indent=2)
-        os.replace(tmp, STATE)  # atomic write
-        return self._json(200, {"ok": True})
+        path = self.path.split("?")[0]
+        if path == "/api/state":
+            n = int(self.headers.get("Content-Length", 0))
+            try:
+                obj = json.loads(self.rfile.read(n) or b"{}")
+            except ValueError:
+                return self._json(400, {"error": "bad json"})
+            # never overwrite saved edits with an empty state unless Reset asked for it
+            if not obj.get("texts") and not obj.get("arrows") and "reset=1" not in self.path:
+                return self._json(200, {"ok": True, "skipped": "empty"})
+            tmp = STATE + ".tmp"
+            with open(tmp, "w", encoding="utf-8") as f:
+                json.dump(obj, f, ensure_ascii=False, indent=2)
+            os.replace(tmp, STATE)  # atomic write
+            return self._json(200, {"ok": True})
+        if path == "/api/narrative":
+            n = int(self.headers.get("Content-Length", 0))
+            text = self.rfile.read(n).decode("utf-8")
+            if not text.strip():
+                return self._json(200, {"ok": True, "skipped": "empty"})
+            tmp = NARRATIVE + ".tmp"
+            with open(tmp, "w", encoding="utf-8") as f:
+                f.write(text)
+            os.replace(tmp, NARRATIVE)  # atomic write
+            return self._json(200, {"ok": True})
+        return self._json(404, {"error": "not found"})
 
     def log_message(self, *a):
         pass
