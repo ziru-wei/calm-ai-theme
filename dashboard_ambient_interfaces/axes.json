@@ -1,0 +1,21 @@
+{
+  "dimensions": [
+    {
+      "id": "dr4lbibdw",
+      "title": "New dimension",
+      "start": "Low",
+      "end": "High",
+      "marks": [],
+      "placements": [
+        {
+          "cardId": "dangling",
+          "pos": 0.13685214075229676
+        },
+        {
+          "cardId": "tangible",
+          "pos": 0.249956664933264
+        }
+      ]
+    }
+  ]
+}

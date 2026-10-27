@@ -1,0 +1,15 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Ambient Interfaces</title><link rel="stylesheet" href="/app.css"></head>
+<body>
+<div class="shell">
+ <header class="header"><div class="heading"><h1>Ambient Interfaces</h1><span id="total">0 cards</span></div><div class="header-right"><button type="button" id="manage-labels" class="subtle">Labels</button><button type="button" id="agent-add" class="subtle">Agent Add</button><button type="button" id="add-card" class="primary">+ Card</button></div></header>
+ <div class="toolbar"><div class="views" role="group" aria-label="View"><button id="view-gallery" class="view active" type="button">Gallery</button><button id="view-board" class="view" type="button">Board</button><button id="view-axis" class="view" type="button">Axis</button></div><button type="button" id="card-properties" class="subtle" title="Choose visible card properties">Properties ▾</button><div id="filters" class="filters"></div><input id="search" type="search" placeholder="Search cards" aria-label="Search cards"></div>
+ <main id="main" aria-live="polite"></main>
+</div>
+<div id="peek-backdrop" aria-hidden="true"></div>
+<section id="detail-page" role="dialog" aria-modal="true" aria-label="Project detail"></section>
+<div id="selection-toolbar" role="toolbar" aria-label="Text formatting" hidden></div>
+<div id="size-dock"><label for="size-slider">Card size</label><input id="size-slider" type="range" min="150" max="440" step="10" value="210"><span id="size-value">210</span></div>
+<div id="message" role="status" aria-live="polite"></div>
+<script defer src="/app.js"></script>
+</body></html>

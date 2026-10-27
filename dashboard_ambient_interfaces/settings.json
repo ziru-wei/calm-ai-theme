@@ -1,0 +1,42 @@
+{
+  "cardWidth": 210,
+  "view": "board",
+  "viewFields": {
+    "gallery": {
+      "image": true,
+      "title": true,
+      "year": true,
+      "description": true,
+      "credit": false,
+      "keywords": false,
+      "label": true,
+      "links": true,
+      "video": true,
+      "note": true
+    },
+    "board": {
+      "image": true,
+      "title": true,
+      "year": true,
+      "description": true,
+      "credit": false,
+      "keywords": false,
+      "label": false,
+      "links": false,
+      "video": false,
+      "note": false
+    },
+    "axis": {
+      "image": true,
+      "title": true,
+      "year": true,
+      "description": false,
+      "credit": false,
+      "keywords": false,
+      "label": false,
+      "links": false,
+      "video": false,
+      "note": false
+    }
+  }
+}
